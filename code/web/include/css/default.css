@@ -1,0 +1,199 @@
+@CHARSET "UTF-8";
+
+body {
+	text-align: center;
+	margin-top: 0;
+	font-family: helvetica, arial, sans-serif;
+	font-size: small;
+	background-color: #E0F0FF;
+}
+
+
+div#wrapper {
+	width: 1000px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+div#header a {
+	color: white;
+	text-decoration: none;
+}
+
+
+div#header {
+	width: 100%;
+	background-color: #455068;
+	padding: 10px 0;
+	color: white;
+}
+
+
+div#header #logo {
+	padding: 0 10px;
+	font-weight: bold;																	
+}
+
+
+div#header #search-form {
+	margin: 0;
+	width: 70%;
+	float: left;
+}
+
+
+div#header #search-box {
+}
+
+
+div#header #search-box #query {
+	width: 300px;
+}
+
+
+div#header #login-box {
+	float: right;
+	margin: 0;
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+
+div#main {
+	padding: 0;
+	width: 100%;
+	height: auto;
+	background-color: white;
+}
+
+
+div#main div#story-browser {
+	width: 190px;
+	background-color: black;
+	color: white;
+	padding: 5px;
+	float: left;
+}
+
+
+div#main div#story-browser .browser-header {
+	font-weight: bold;
+	margin: 5px 0;
+}
+
+
+div#main div#story-browser .browser-item {
+	
+}
+
+
+div#main div#story-browser .browser-item a {
+	color: orange;
+}
+
+
+div#main div#story-recommender {
+	width: 240px;
+	background-color: #303032;
+	color: white;
+	padding: 5px;
+	float: right;
+}
+
+
+div#main div#story-recommender .recommendation {
+	margin: 10px 0;
+}
+
+
+div#main div#story-recommender .recommendation a {
+	color: yellow;
+}
+
+
+div#main div#story-recommender .recommendation .title {
+}
+
+
+div#main div#story-recommender .recommendation .text {
+}
+
+
+div#main div#content {
+	width: 530px;
+	padding: 10px;
+	float: left;
+	min-height: 200px;
+}
+
+
+div#main div#content-login {
+	width: 740px;
+	padding: 5px;
+	float: left;
+	text-align: center;
+}
+
+
+div#main div#content .results-header {
+	margin: 5px 0;
+}
+
+
+div#main div#content .found-story {
+	margin: 20px 0;
+}
+
+
+div#main div#content .found-story .title {
+}
+
+
+div#main div#content .found-story .text {
+}
+
+
+div#main div#content-login div {
+	margin: 3px 0;
+}
+
+
+div#main div#content-login .form-label {
+	width: 100px;
+	display: inline-block;
+}
+
+
+div#main div#content-login .form-field {
+	
+}
+
+
+div#main div#content-login #login-form {
+	margin: 100px auto;
+	width: 300px;
+	text-align: left;
+}
+
+
+div#footer {
+	background-color: #455068;
+	clear: both;
+	text-align: right;
+	padding: 5px 0;
+	font-size: x-small;
+	font-style: italic; 
+	color: white;
+	padding-right: 10px;
+}
+
+
+.error {
+	color: red;
+}
+
+
+.clear {
+	clear: both;
+	margin: 0;
+}
