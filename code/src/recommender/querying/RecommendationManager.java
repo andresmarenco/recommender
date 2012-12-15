@@ -34,9 +34,9 @@ public class RecommendationManager {
 			RetrievalManager rm = new RetrievalManager();
 			result = rm.searchStories(ir_query.toString(), 1, DEFAULT_RECOMMENDATIONS);
 			
-			for(IRStory story : result) {
+			/*for(IRStory story : result) {
 				System.out.println(MessageFormat.format("[{0}] {1}", story.getCode(), story.getText()));
-			}
+			}*/
 		}
 		
 		return result;

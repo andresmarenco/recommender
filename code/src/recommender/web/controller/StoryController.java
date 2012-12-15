@@ -57,8 +57,8 @@ public class StoryController extends HttpServlet {
 				
 				StoryDisplayer storyDisplayer = new StoryDisplayer();
 				IRStory story = storyDisplayer.showStory(story_id.longValue(), user, story_session);
-				request.setAttribute("story", story);
 				
+				request.setAttribute("story", story);
 				session.setAttribute("story_session", story_session);
 			}
 		}

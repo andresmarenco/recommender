@@ -29,7 +29,7 @@
 	  					</h1>
 	  					
 	  					<p>
-	  						<c:out value="${story.text}" />
+	  						<c:out value="${utl:escapeNewline(story.text)}" escapeXml="false" />
 	  					</p>
 	  				</c:if>
   				</div>
