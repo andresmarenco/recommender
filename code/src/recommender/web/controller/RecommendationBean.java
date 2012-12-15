@@ -7,6 +7,7 @@ import java.util.Queue;
 import recommender.beans.IRStory;
 import recommender.beans.IRUser;
 import recommender.querying.RecommendationManager;
+import recommender.utils.RecommenderException;
 
 public class RecommendationBean implements Serializable {
 	
@@ -78,7 +79,14 @@ public class RecommendationBean implements Serializable {
 	/**
 	 * @return the recommendations
 	 */
-	public List<IRStory> getRecommendations() {
+	public List<IRStory> getRecommendations() throws RecommenderException {
+		
+		for(Object o : System.getProperties().keySet()) {
+			System.out.println(o + ": " + System.getProperty(o.toString()));
+		}
+		
+		
+		
 		RecommendationManager recommendationManager = new RecommendationManager();
 		
 		return recommendationManager.recommendStories(this.user, this.current_story, this.story_session);

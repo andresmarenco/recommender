@@ -34,7 +34,7 @@ public class StoryDisplayer {
 		try
 		{
 			StoryDAO storyDAO = new StoryDAO();
-			story = storyDAO.loadStory(story_id);
+			story = storyDAO.loadStory(story_id, false);
 			
 			if(user != null) {
 				UserDAO userDAO = new UserDAO();

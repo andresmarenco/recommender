@@ -127,6 +127,12 @@ div#main div#content {
 }
 
 
+div#main div#content .story {
+	font-size: medium;
+	text-align: justify;
+}
+
+
 div#main div#content-login {
 	width: 740px;
 	padding: 5px;

@@ -22,15 +22,17 @@
   					</div>
   				</c:if>
   				
-  				<c:if test="${story != null}">
-  					<h1>
-  						<c:out value="${story.title}" />
-  					</h1>
-  					
-  					<p>
-  						<c:out value="${story.text}" />
-  					</p>
-  				</c:if>
+  				<div class="story">
+	  				<c:if test="${story != null}">
+	  					<h1>
+	  						<c:out value="${story.title}" />
+	  					</h1>
+	  					
+	  					<p>
+	  						<c:out value="${story.text}" />
+	  					</p>
+	  				</c:if>
+  				</div>
   			</div>
   			
   			<jsp:include page="./include/recommendation.jsp" />

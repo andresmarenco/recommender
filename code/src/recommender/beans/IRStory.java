@@ -1,6 +1,7 @@
 package recommender.beans;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class IRStory implements Serializable {
 
@@ -10,6 +11,7 @@ public class IRStory implements Serializable {
 	private String code;
 	private String title;
 	private String text;
+	private List<IRKeyword> keywords;
 	
 	
 	/**
@@ -31,6 +33,7 @@ public class IRStory implements Serializable {
 		this.code = null;
 		this.title = null;
 		this.text = null;
+		this.keywords = null;
 	}
 
 
@@ -75,7 +78,7 @@ public class IRStory implements Serializable {
 	 * @return the title
 	 */
 	public String getTitle() {
-		return title;
+		return ((this.title == null) || (this.title.isEmpty()) ? this.text.substring(0, Math.min(30, this.text.length())) + "..." : title);
 	}
 
 
@@ -93,7 +96,7 @@ public class IRStory implements Serializable {
 	 * @return the text
 	 */
 	public String getText() {
-		return text;
+		return this.text;
 	}
 
 
@@ -107,11 +110,22 @@ public class IRStory implements Serializable {
 
 
 
+
 	/**
-	 * @return the serialversionuid
+	 * @return the keywords
 	 */
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public List<IRKeyword> getKeywords() {
+		return keywords;
+	}
+
+
+
+
+	/**
+	 * @param keywords the keywords to set
+	 */
+	public void setKeywords(List<IRKeyword> keywords) {
+		this.keywords = keywords;
 	}
 	
 	

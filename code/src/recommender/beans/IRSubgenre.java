@@ -2,7 +2,7 @@ package recommender.beans;
 
 import java.io.Serializable;
 
-public class IRSubgenre implements Serializable {
+public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 
 	private static final long serialVersionUID = 201212101440L;
 	
@@ -19,8 +19,8 @@ public class IRSubgenre implements Serializable {
 	
 	/**
 	 * Fields Constructor
-	 * @param id Subgenre Id
-	 * @param name Subgenre Name
+	 * @param id Subgenre's Id
+	 * @param name Subgenre's Name
 	 */
 	public IRSubgenre(long id, String name) {
 		super();
@@ -58,5 +58,17 @@ public class IRSubgenre implements Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+
+	@Override
+	public int compareTo(IRSubgenre other) {
+		return Long.valueOf(this.getId()).compareTo(other.getId());
+	}
+	
+	
+	@Override
+	public String toString() {
+		return this.getName();
 	}
 }

@@ -2,7 +2,7 @@ package recommender.beans;
 
 import java.io.Serializable;
 
-public class IRKeyword implements Serializable {
+public class IRKeyword implements Serializable, Comparable<IRKeyword> {
 
 	private static final long serialVersionUID = 201211300220L;
 	private long id;
@@ -15,6 +15,21 @@ public class IRKeyword implements Serializable {
 	public IRKeyword() {
 		super();
 	}
+	
+	
+	
+	/**
+	 * Fields Constructor
+	 * @param id Keyword's Id
+	 * @param name Keyword's Name
+	 */
+	public IRKeyword(long id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
+
 
 
 	/**
@@ -48,4 +63,16 @@ public class IRKeyword implements Serializable {
 		this.name = name;
 	}
 
+
+
+	@Override
+	public int compareTo(IRKeyword other) {
+		return Long.valueOf(this.getId()).compareTo(Long.valueOf(other.getId()));
+	}
+	
+	
+	@Override
+	public String toString() {
+		return this.getName();
+	}
 }
