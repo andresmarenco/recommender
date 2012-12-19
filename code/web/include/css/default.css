@@ -92,12 +92,18 @@ div#main div#story-browser .browser-item a {
 }
 
 
+div#main div#column-message,
 div#main div#story-recommender {
 	width: 240px;
 	background-color: #303032;
 	color: white;
 	padding: 5px;
 	float: right;
+}
+
+
+div#main div#column-message div {
+	margin: 10px 0;
 }
 
 
@@ -133,6 +139,7 @@ div#main div#content .story {
 }
 
 
+div#main div#content-register,
 div#main div#content-login {
 	width: 740px;
 	padding: 5px;
@@ -159,22 +166,26 @@ div#main div#content .found-story .text {
 }
 
 
+div#main div#content-register div,
 div#main div#content-login div {
 	margin: 3px 0;
 }
 
 
+div#main div#content-register .form-label,
 div#main div#content-login .form-label {
 	width: 100px;
 	display: inline-block;
 }
 
 
+div#main div#content-register .form-field,
 div#main div#content-login .form-field {
 	
 }
 
 
+div#main div#content-register #register-form,
 div#main div#content-login #login-form {
 	margin: 100px auto;
 	width: 300px;

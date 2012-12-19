@@ -8,7 +8,7 @@
 	
 		<span id="search-box">
 			<input type="text" id="query" name="query" />
-			<input type="submit" id="search" name="search" value="<fmt:message key="search" />" />
+			<button type="button" id="search" name="search" onclick="$('form#search-form').submit()"><fmt:message key="search" /></button>
 		</span>
 	</form>
 	
@@ -25,16 +25,16 @@
 					<a href="#" onclick="$('form#login-box').submit()"><fmt:message key="auth.logout" /></a>
 				</span>
 				
-				<input type="hidden" name="auth" id="auth" value="<%=recommender.web.controller.AuthController.AuthService.LOGOUT%>" />
+				<input type="hidden" name="action" id="auth_action" value="Logout" />
 			</c:when>
 			
 			<c:otherwise>
 				<span>
-					<a href="./login.jsp"><fmt:message key="auth.login" /></a>
+					<a href="${pageContext.request.contextPath}/login.do"><fmt:message key="auth.login" /></a>
 				</span>
 				<span>|</span>
 				<span>
-					<a href="./register.jsp"><fmt:message key="auth.sign_up" /></a>
+					<a href="${pageContext.request.contextPath}/register.do"><fmt:message key="auth.sign_up" /></a>
 				</span>
 			</c:otherwise>
 		</c:choose>

@@ -3,11 +3,6 @@ package recommender.beans;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import org.apache.commons.codec.binary.Hex;
-
-import recommender.utils.CryptoUtil;
-import recommender.utils.RecommenderException;
-
 public class IRUser implements Serializable {
 
 	private static final long serialVersionUID = 201211301513L;
@@ -75,12 +70,6 @@ public class IRUser implements Serializable {
 	 */
 	public void setUsername(String username) {
 		this.username = username;
-		
-		/*if(ValidationUtil.validateUsername(username)) {
-			this.username = username;
-		} else {
-			throw new RecommenderException(RecommenderException.MSG_ERROR_USERNAME_POLICY);
-		}*/
 	}
 
 
@@ -93,42 +82,11 @@ public class IRUser implements Serializable {
 
 
 	/**
-	 * Sets the encrypted password
+	 * Sets the password
 	 * @param password The password to set
-	 * @throws RecommenderException
 	 */
-	public void setPassword(String password) throws RecommenderException {
-		try
-		{
-			String salt = String.valueOf(System.currentTimeMillis());
-			salt = salt.substring(salt.length() - 4);
-			
-			this.password = Hex.encodeHexString(CryptoUtil.digestToBinary(password + salt)) + salt;
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-			this.password = null;
-			
-			throw new RecommenderException(RecommenderException.MSG_ERROR_CRYPTO);
-		}
-		
-		/*if(ValidationUtil.validatePassword(password)) {
-			try
-			{
-				String salt = String.valueOf(System.currentTimeMillis());
-				salt = salt.substring(salt.length() - 4);
-				
-				this.password = Hex.encodeHexString(CryptoUtil.digestToBinary(password + salt)) + salt;
-			}
-			catch(Exception ex) {
-				ex.printStackTrace();
-				this.password = null;
-				
-				throw new RecommenderException(RecommenderException.MSG_ERROR_CRYPTO);
-			}
-		} else {
-			throw new RecommenderException(RecommenderException.MSG_ERROR_PASSWORD_POLICY);
-		}*/
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 

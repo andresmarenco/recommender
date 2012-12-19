@@ -22,16 +22,24 @@ public class Test {
 			
 			System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
 			
+			IRUser u = new IRUser();
+			u.setUsername("test");
+			u.setPassword("test123");
+			u.setName("Test User");
 			
+			UserDAO userDAO = new UserDAO();
+			userDAO.createUser(u, true);
+			
+			System.out.println(u.getId());
 			/*UserDAO userdao = new UserDAO();
 			
 			IRUser user = userdao.login("root", "123");
 			System.out.println(user.getId());*/
 			
-			IRStory s = new StoryDAO().loadStory(609L, true);
+			/*IRStory s = new StoryDAO().loadStory(609L, true);
 			
 			RecommendationManager rm = new RecommendationManager();
-			rm.recommendStories(null, s, new LinkedList<Long>());
+			rm.recommendStories(null, s, new LinkedList<Long>());*/
 			
 			
 			/*IRUser user = new IRUser();

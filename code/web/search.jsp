@@ -16,18 +16,14 @@
   			<jsp:include page="./include/browser.jsp" />
   			
   			<div id="content">
+  				<c:forEach items="${errors['default']}" var="field_error"><div><span class="error"><fmt:message key="${field_error}" /></span></div></c:forEach>
+  			
   				<div class="results-header">
   					<fmt:message key="search.results">
   						<fmt:param value="${results.size()}" />
   						<fmt:param value="${param['query']}" />
   					</fmt:message>
   				</div>
-  			
-  				<c:if test="${errors != null}">
-  					<div class="error">
-  						<c:out value="${errors}"></c:out>
-  					</div>
-  				</c:if>
   				
   				<c:forEach items="${results}" var="story">
   					<div class="found-story">

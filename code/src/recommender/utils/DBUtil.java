@@ -60,5 +60,44 @@ public class DBUtil {
 			ex.printStackTrace();
 		}
 	}
+	
+	
+	
+	
+	/**
+	 * Defines if a connection auto commits
+	 * @param connection Connection to set
+	 * @param autoCommit True if auto commiting
+	 */
+	public static void setAutoCommit(Connection connection, boolean autoCommit) {
+		try
+		{
+			if(connection != null) {
+				connection.setAutoCommit(autoCommit);
+			}
+		}
+		catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Rollbacks the statements of the connection
+	 * @param connection Connection to rollback
+	 */
+	public static void rollback(Connection connection) {
+		try
+		{
+			if(connection != null) {
+				connection.rollback();
+			}
+		}
+		catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 }

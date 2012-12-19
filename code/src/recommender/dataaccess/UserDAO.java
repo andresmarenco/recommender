@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -13,6 +15,7 @@ import recommender.beans.IRUser;
 import recommender.utils.CryptoUtil;
 import recommender.utils.DBUtil;
 import recommender.utils.RecommenderException;
+import recommender.utils.ValidationUtil;
 
 public class UserDAO {
 	
@@ -144,6 +147,77 @@ public class UserDAO {
 		return result;
 	}
 	
+	
+	
+	
+	/**
+	 * Creates a new user into the system
+	 * @param user New user data
+	 * @param login Logins the new user into the system
+	 * @return User with the generated id
+	 * @throws RecommenderException
+	 */
+	public IRUser createUser(IRUser user, boolean login) throws RecommenderException {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			if(!ValidationUtil.validateUsername(user.getUsername())) {
+				throw new RecommenderException(RecommenderException.MSG_ERROR_USERNAME_POLICY);
+			}
+			
+			if(!ValidationUtil.validatePassword(user.getPassword())) {
+				throw new RecommenderException(RecommenderException.MSG_ERROR_PASSWORD_POLICY);
+			}
+			
+			if(ValidationUtil.existingUsername(user.getUsername())) {
+				throw new RecommenderException(RecommenderException.MSG_ERROR_EXISTING_USERNAME);
+			}
+			
+			Timestamp now = (login) ? new Timestamp(System.currentTimeMillis()) : null;
+			connection = _ConnectionManager.getConnection();
+			DBUtil.setAutoCommit(connection, false);
+			stmt = connection.prepareStatement("insert into ir_user (username, password, name, last_login, active) values (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, user.getUsername());
+			stmt.setString(2, CryptoUtil.encyptPassword(user.getPassword()));
+			stmt.setString(3, user.getName());
+			
+			if(login) {
+				stmt.setTimestamp(4, now); 
+			} else {
+				stmt.setNull(4, Types.TIMESTAMP);
+			}
+			
+			stmt.setBoolean(5, true);
+			stmt.executeUpdate();
+			
+			rs = stmt.getGeneratedKeys();
+			
+			if(rs.next()) {
+				user = this.loadUser(rs.getLong(1));
+			}
+			
+			connection.commit();
+		}
+		catch(SQLException ex) {
+			DBUtil.rollback(connection);
+			
+			ex.printStackTrace();
+			throw new RecommenderException(ex.getMessage());
+		}
+		finally {
+			DBUtil.setAutoCommit(connection, true);
+			
+			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		
+		return user;
+	}
 	
 	
 	

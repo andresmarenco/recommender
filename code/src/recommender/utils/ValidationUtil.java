@@ -1,5 +1,11 @@
 package recommender.utils;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import recommender.dataaccess.ConnectionManager;
+
 public class ValidationUtil {
 	
 	/**
@@ -56,5 +62,39 @@ public class ValidationUtil {
 	 */
 	public static boolean validateEmail(String email) {
 		return ((email != null) && (email.matches(REGEX_EMAIL_POLICY)));
+	}
+	
+	
+	
+	
+	/**
+	 * Checks if a username already exists
+	 * @param username Username to check
+	 * @return True if the username exists
+	 * @throws RecommenderException
+	 */
+	public static boolean existingUsername(String username) throws RecommenderException {
+		boolean result = false;
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		
+		try
+		{
+			connection = ConnectionManager.getInstance().getConnection();
+			stmt = connection.prepareStatement("select 1 from ir_user where username=?");
+			stmt.setString(1, username);
+			
+			result = stmt.executeQuery().next();
+		}
+		catch(SQLException ex) {
+			ex.printStackTrace();
+			throw new RecommenderException(ex.getMessage());
+		}
+		finally {
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
 	}
 }
