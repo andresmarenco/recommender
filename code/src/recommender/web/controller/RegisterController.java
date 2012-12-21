@@ -10,7 +10,7 @@ import recommender.dataaccess.UserDAO;
 import recommender.utils.RecommenderException;
 import recommender.utils.ValidationUtil;
 import recommender.web.FormActionServlet;
-import recommender.web.WebCommon;
+import recommender.web.WebUtil;
 
 /**
  * Servlet implementation class RegisterController
@@ -49,7 +49,7 @@ public class RegisterController extends FormActionServlet {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", ex.getMessage());
+			WebUtil.addFieldError(errors, "default", ex.getMessage());
 		}
     }
 	
@@ -78,11 +78,11 @@ public class RegisterController extends FormActionServlet {
 			}
 		}
     	catch(RecommenderException ex) {
-    		WebCommon.addFieldError(errors, "default", ex.getMessage());
+    		WebUtil.addFieldError(errors, "default", ex.getMessage());
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
+			WebUtil.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
 		}
 	}
 
@@ -94,34 +94,34 @@ public class RegisterController extends FormActionServlet {
 	 * @throws RecommenderException
 	 */
 	private void validate() throws RecommenderException {
-		if(WebCommon.checkRequiredField(errors, "fullname", fullname)) {
+		if(WebUtil.checkRequiredField(errors, "fullname", fullname)) {
 			fullname = fullname.trim();	
 		}
 		
 		
-		if(WebCommon.checkRequiredField(errors, "username", username)) {
+		if(WebUtil.checkRequiredField(errors, "username", username)) {
 			username = username.trim();
 			
 			if(!ValidationUtil.validateUsername(username)) {
-				WebCommon.addFieldError(errors, "username", RecommenderException.MSG_ERROR_USERNAME_POLICY);
+				WebUtil.addFieldError(errors, "username", RecommenderException.MSG_ERROR_USERNAME_POLICY);
 			}
 			
 			if(ValidationUtil.existingUsername(username)) {
-				WebCommon.addFieldError(errors, "username", RecommenderException.MSG_ERROR_EXISTING_USERNAME);
+				WebUtil.addFieldError(errors, "username", RecommenderException.MSG_ERROR_EXISTING_USERNAME);
 			}
 		}
 		
 		
-		if(WebCommon.checkRequiredField(errors, "password", password)) {
+		if(WebUtil.checkRequiredField(errors, "password", password)) {
 			if(!ValidationUtil.validatePassword(password)) {
-				WebCommon.addFieldError(errors, "password", RecommenderException.MSG_ERROR_PASSWORD_POLICY);
+				WebUtil.addFieldError(errors, "password", RecommenderException.MSG_ERROR_PASSWORD_POLICY);
 			}
 		}
 		
 		
-		if(WebCommon.checkRequiredField(errors, "retype_password", retype_password)) {
+		if(WebUtil.checkRequiredField(errors, "retype_password", retype_password)) {
 			if(!password.equals(retype_password)) {
-				WebCommon.addFieldError(errors, "retype_password", RecommenderException.MSG_ERROR_CONFIRM_PASSWORD);
+				WebUtil.addFieldError(errors, "retype_password", RecommenderException.MSG_ERROR_CONFIRM_PASSWORD);
 			}
 		}
 	}

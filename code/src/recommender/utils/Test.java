@@ -3,6 +3,7 @@ package recommender.utils;
 import java.util.LinkedList;
 
 import recommender.beans.IRStory;
+import recommender.beans.IRSubgenre;
 import recommender.beans.IRUser;
 import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.StoryDAO;
@@ -22,15 +23,15 @@ public class Test {
 			
 			System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
 			
-			IRUser u = new IRUser();
-			u.setUsername("test");
-			u.setPassword("test123");
-			u.setName("Test User");
+			IRSubgenre sg = new IRSubgenre();
+			sg.setId(21L);
 			
-			UserDAO userDAO = new UserDAO();
-			userDAO.createUser(u, true);
+			StoryDAO storyDAO = new StoryDAO();
+			int i = 0;
+			for(IRStory s : storyDAO.listStories(sg, 5, null)) {
+				System.out.println(++i + " - " + s.getId());
+			}
 			
-			System.out.println(u.getId());
 			/*UserDAO userdao = new UserDAO();
 			
 			IRUser user = userdao.login("root", "123");

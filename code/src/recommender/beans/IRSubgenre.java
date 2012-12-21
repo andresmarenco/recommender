@@ -8,6 +8,7 @@ public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 	
 	private long id;
 	private String name;
+	private int total;
 	
 	/**
 	 * Default Constructor
@@ -27,9 +28,20 @@ public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 		this.id = id;
 		this.name = name;
 	}
+	
 
-
-
+	/**
+	 * Fields Constructor
+	 * @param id Subgenre's Id
+	 * @param name Subgenre's Name
+	 * @param total Total of stories with this Subgenre
+	 */
+	public IRSubgenre(long id, String name, int total) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.total = total;
+	}
 
 
 	/**
@@ -58,6 +70,22 @@ public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+
+	/**
+	 * @return the total
+	 */
+	public int getTotal() {
+		return total;
+	}
+
+
+	/**
+	 * @param total the total to set
+	 */
+	public void setTotal(int total) {
+		this.total = total;
 	}
 
 

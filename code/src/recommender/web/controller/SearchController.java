@@ -8,7 +8,7 @@ import recommender.beans.IRStory;
 import recommender.querying.QueryManager;
 import recommender.utils.RecommenderException;
 import recommender.web.FormActionServlet;
-import recommender.web.WebCommon;
+import recommender.web.WebUtil;
 
 /**
  * Servlet implementation class SearchController
@@ -41,7 +41,7 @@ public class SearchController extends FormActionServlet {
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
+			WebUtil.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
 		}
     }
     
@@ -61,7 +61,7 @@ public class SearchController extends FormActionServlet {
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
+			WebUtil.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
 		}
     }
     
@@ -69,7 +69,7 @@ public class SearchController extends FormActionServlet {
     
     
     /**
-     * Default Action of the Servlet
+     * Servlet default action
      */
     @Override
     protected String getAction() {

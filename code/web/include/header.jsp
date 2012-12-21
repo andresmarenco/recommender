@@ -8,7 +8,7 @@
 	
 		<span id="search-box">
 			<input type="text" id="query" name="query" />
-			<button type="button" id="search" name="search" onclick="$('form#search-form').submit()"><fmt:message key="search" /></button>
+			<a href="#" class="button" onclick="$('form#search-form').submit()"><fmt:message key="search" /></a>
 		</span>
 	</form>
 	

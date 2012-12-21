@@ -28,7 +28,7 @@
   				<c:forEach items="${results}" var="story">
   					<div class="found-story">
   						<div class="title">
-  							<a href="./story?id=${story.id}">
+  							<a href="${pageContext.request.contextPath}/story?id=${story.id}">
   								<c:out value="${story.title}" />
   							</a>
   						</div>

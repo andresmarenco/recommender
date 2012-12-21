@@ -9,7 +9,7 @@
 	
 	<c:forEach items="${browserBean.subgenres}" var="subgenre">
 		<div class="browser-item">
-			<c:out value="${subgenre.name}" />
+			<a href="${pageContext.request.contextPath}/stories_list?subgenre=${subgenre.id}"><c:choose><c:when test="${!subgenre.name.isEmpty()}"><c:out value="${subgenre.name}" /></c:when><c:otherwise><fmt:message key="undefined" /></c:otherwise></c:choose></a> (<c:out value="${subgenre.total}" />)
 		</div>
 	</c:forEach>
 </div>

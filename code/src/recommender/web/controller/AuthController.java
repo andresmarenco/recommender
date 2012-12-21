@@ -8,7 +8,7 @@ import recommender.beans.IRUser;
 import recommender.dataaccess.UserDAO;
 import recommender.utils.RecommenderException;
 import recommender.web.FormActionServlet;
-import recommender.web.WebCommon;
+import recommender.web.WebUtil;
 
 /**
  * Servlet implementation class AuthController
@@ -41,12 +41,12 @@ public class AuthController extends FormActionServlet {
 			username = (username != null) ? username.trim() : "";
 			password = request.getParameter("password");
 			
-			WebCommon.checkRequiredField(errors, "username", username);
-    		WebCommon.checkRequiredField(errors, "password", password);
+			WebUtil.checkRequiredField(errors, "username", username);
+    		WebUtil.checkRequiredField(errors, "password", password);
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", ex.getMessage());
+			WebUtil.addFieldError(errors, "default", ex.getMessage());
 		}
     }
     
@@ -72,11 +72,11 @@ public class AuthController extends FormActionServlet {
     		}
 		}
     	catch(RecommenderException ex) {
-    		WebCommon.addFieldError(errors, "default", ex.getMessage());
+    		WebUtil.addFieldError(errors, "default", ex.getMessage());
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
+			WebUtil.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_ERROR);
 		}
     }
     
@@ -97,7 +97,7 @@ public class AuthController extends FormActionServlet {
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			WebCommon.addFieldError(errors, "default", ex.getMessage());
+			WebUtil.addFieldError(errors, "default", ex.getMessage());
 		}
     }
 
