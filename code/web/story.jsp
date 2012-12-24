@@ -23,15 +23,21 @@
   				</c:if>
   				
   				<div class="story">
-	  				<c:if test="${story != null}">
-	  					<h1>
-	  						<c:out value="${story.title}" />
-	  					</h1>
-	  					
-	  					<p>
-	  						<c:out value="${utl:escapeNewline(story.text)}" escapeXml="false" />
-	  					</p>
-	  				</c:if>
+  					<c:choose>
+  						<c:when test="${story != null}">
+  							<h1>
+	  							<c:out value="${story.title}" />
+		  					</h1>
+		  					<p>
+		  						<c:out value="${utl:escapeNewline(story.text)}" escapeXml="false" />
+		  					</p>
+  						</c:when>
+  						<c:otherwise>
+  							<div class="error">
+  								<fmt:message key="story.not_found" />
+  							</div>
+  						</c:otherwise>
+  					</c:choose>
   				</div>
   			</div>
   			

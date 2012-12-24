@@ -10,7 +10,7 @@ import java.sql.Types;
 
 import org.apache.commons.codec.binary.Hex;
 
-import recommender.beans.IRStory;
+import recommender.beans.IREventType;
 import recommender.beans.IRUser;
 import recommender.utils.CryptoUtil;
 import recommender.utils.DBUtil;
@@ -76,6 +76,10 @@ public class UserDAO {
 						DBUtil.closeStatement(updateStmt);
 						
 						credential = this.loadUser(userId);
+			
+						// Log the event
+						EventDAO eventDAO = new EventDAO();
+						eventDAO.logEvent(credential, IREventType.EVENT_LOGIN);
 						
 					} else {
 						throw new RecommenderException(RecommenderException.MSG_INVALID_PASSWORD);
@@ -197,6 +201,14 @@ public class UserDAO {
 			
 			if(rs.next()) {
 				user = this.loadUser(rs.getLong(1));
+				
+				// Log the events
+				EventDAO eventDAO = new EventDAO();
+				eventDAO.logEvent(user, IREventType.EVENT_SIGNUP);
+				
+				if(login) {
+					eventDAO.logEvent(user, IREventType.EVENT_LOGIN);
+				}
 			}
 			
 			connection.commit();
@@ -223,12 +235,14 @@ public class UserDAO {
 	
 	
 	/**
-	 * Logs the user's viewed story
-	 * @param user Current User
-	 * @param story Current Story
+	 * Logs out a User from the system
+	 * @param user User to log out
+	 * @throws RecommenderException
 	 */
-	public void logViewedStory(IRUser user, IRStory story) {
-		// TODO: Are we going to log this?????
+	public void logout(IRUser user) throws RecommenderException {
+		if((user != null) && (user.getId() != Long.MIN_VALUE)) {
+			EventDAO eventDAO = new EventDAO();
+			eventDAO.logEvent(user, IREventType.EVENT_LOGOUT);
+		}
 	}
-
 }

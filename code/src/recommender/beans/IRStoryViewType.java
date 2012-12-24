@@ -2,9 +2,13 @@ package recommender.beans;
 
 import java.io.Serializable;
 
-public class IRKeyword implements Serializable {
+public class IRStoryViewType implements Serializable {
 
-	private static final long serialVersionUID = 201211300220L;
+	private static final long serialVersionUID = 201212220422L;
+
+	public static final String VIEW_TYPE_RECOMMENDATION = "recommendation";
+	public static final String VIEW_TYPE_BROWSER = "browser";
+	public static final String VIEW_TYPE_SEARCH = "search";
 	
 	private long id;
 	private String name;
@@ -13,7 +17,7 @@ public class IRKeyword implements Serializable {
 	/**
 	 * Default Constructor
 	 */
-	public IRKeyword() {
+	public IRStoryViewType() {
 		super();
 		this.clear();
 	}
@@ -23,9 +27,21 @@ public class IRKeyword implements Serializable {
 	/**
 	 * Fields Constructor
 	 * @param id Keyword's Id
+	 */
+	public IRStoryViewType(long id) {
+		super();
+		this.id = id;
+		this.name = null;
+	}
+	
+	
+	
+	/**
+	 * Fields Constructor
+	 * @param id Keyword's Id
 	 * @param name Keyword's Name
 	 */
-	public IRKeyword(long id, String name) {
+	public IRStoryViewType(long id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -75,6 +91,9 @@ public class IRKeyword implements Serializable {
 	}
 	
 	
+	
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -99,14 +118,13 @@ public class IRKeyword implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		IRKeyword other = (IRKeyword) obj;
+		IRStoryViewType other = (IRStoryViewType) obj;
 		if (id != other.id)
 			return false;
 		return true;
 	}
-
-
-
+	
+	
 	@Override
 	public String toString() {
 		return this.getName();

@@ -2,35 +2,37 @@ package recommender.beans;
 
 import java.io.Serializable;
 
-public class IRKeyword implements Serializable {
+public class IREventType implements Serializable {
 
-	private static final long serialVersionUID = 201211300220L;
+	private static final long serialVersionUID = 201212212223L;
+	
+	public static final String EVENT_LOGIN = "login";
+	public static final String EVENT_LOGOUT = "logout";
+	public static final String EVENT_SIGNUP = "signup";
+	public static final String EVENT_VIEW_STORY = "view_story";
 	
 	private long id;
 	private String name;
 	
-	
 	/**
 	 * Default Constructor
 	 */
-	public IRKeyword() {
+	public IREventType() {
 		super();
 		this.clear();
 	}
-	
-	
+
 	
 	/**
-	 * Fields Constructor
-	 * @param id Keyword's Id
-	 * @param name Keyword's Name
+	 * Constructor with Fields
+	 * @param id Id of the Event Type
+	 * @param name Name of the Event Type
 	 */
-	public IRKeyword(long id, String name) {
+	public IREventType(long id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
 	}
-
 	
 	
 	/**
@@ -40,7 +42,6 @@ public class IRKeyword implements Serializable {
 		this.id = Long.MIN_VALUE;
 		this.name = null;
 	}
-
 
 
 	/**
@@ -75,6 +76,12 @@ public class IRKeyword implements Serializable {
 	}
 	
 	
+	@Override
+	public String toString() {
+		return this.name;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -85,7 +92,6 @@ public class IRKeyword implements Serializable {
 		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
-
 
 
 	/* (non-Javadoc)
@@ -99,16 +105,9 @@ public class IRKeyword implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		IRKeyword other = (IRKeyword) obj;
+		IREventType other = (IREventType) obj;
 		if (id != other.id)
 			return false;
 		return true;
-	}
-
-
-
-	@Override
-	public String toString() {
-		return this.getName();
 	}
 }

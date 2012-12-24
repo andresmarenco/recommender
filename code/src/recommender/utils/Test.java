@@ -1,6 +1,7 @@
 package recommender.utils;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 import recommender.beans.IRStory;
 import recommender.beans.IRSubgenre;
@@ -9,6 +10,8 @@ import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.UserDAO;
 import recommender.querying.RecommendationManager;
+import recommender.querying.StoryDisplayer;
+import recommender.web.controller.StoryViewTypeBean;
 
 public class Test {
 
@@ -23,20 +26,12 @@ public class Test {
 			
 			System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
 			
-			IRSubgenre sg = new IRSubgenre();
-			sg.setId(21L);
 			
-			StoryDAO storyDAO = new StoryDAO();
-			int i = 0;
-			for(IRStory s : storyDAO.listStories(sg, 5, null)) {
-				System.out.println(++i + " - " + s.getId());
-			}
+			UserDAO userdao = new UserDAO();
 			
-			/*UserDAO userdao = new UserDAO();
+			//IRUser user = userdao.login("root", "123");
 			
-			IRUser user = userdao.login("root", "123");
-			System.out.println(user.getId());*/
-			
+			StoryViewTypeBean sv = new StoryViewTypeBean();
 			/*IRStory s = new StoryDAO().loadStory(609L, true);
 			
 			RecommendationManager rm = new RecommendationManager();

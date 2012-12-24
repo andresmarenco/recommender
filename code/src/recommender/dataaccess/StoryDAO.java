@@ -9,6 +9,7 @@ import java.util.List;
 
 import recommender.beans.IRKeyword;
 import recommender.beans.IRStory;
+import recommender.beans.IRStoryStats;
 import recommender.beans.IRSubgenre;
 import recommender.utils.DBUtil;
 
@@ -176,7 +177,7 @@ public class StoryDAO {
 	 * @param offset Offset for the first result
 	 * @return List of stories
 	 */
-	public List<IRStory> listStories(IRSubgenre subgenre, Integer limit, Integer offset) {
+	public List<IRStory> listStories(IRSubgenre subgenre, Integer limit, Integer offset, StoriesOrder order) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -186,19 +187,33 @@ public class StoryDAO {
 		{
 			result = new ArrayList<IRStory>();
 			connection = _ConnectionManager.getConnection();
-			String query = "select s.*, concat(substring(c.`Text`, 1, 140), '...') as text from story as s inner join content as c on c.id = s.contentId where s.subgenreId = ? order by s.id";
+			//StringBuilder query = new StringBuilder("select s.* from irv_story_stats as s where s.subgenreId = ? ");
+			StringBuilder query = new StringBuilder("select s.*, concat(substring(c.`Text`, 1, 140), '...') as text, (select count(1) from `ir_story_view_log` `sl` where (`sl`.`StoryId` = `s`.`Id`)) AS `views` from story as s inner join content as c on c.id = s.contentId where s.subgenreId = ? ");
+			
+			switch(order) {
+			case MOST_VIEWED: {
+				query.append(" order by views desc, s.id asc ");
+				break;
+			}
+			
+			case ALPHABETICALLY:
+			default: {
+				query.append(" order by s.id ");
+				break;
+			}
+			}
 			
 			if((limit == null) && (offset == null)) {
-				stmt = connection.prepareStatement(query);
+				stmt = connection.prepareStatement(query.toString());
 			} else if(offset == null) {
-				stmt = connection.prepareStatement(query + " LIMIT ?");
+				stmt = connection.prepareStatement(query.append(" LIMIT ?").toString());
 				stmt.setLong(2, limit.intValue());
 			} else if(limit == null) {
-				stmt = connection.prepareStatement(query + " LIMIT ?,?");
+				stmt = connection.prepareStatement(query.append(" LIMIT ?,?").toString());
 				stmt.setLong(2, offset.intValue());
 				stmt.setLong(3, Integer.MAX_VALUE);
 			} else {
-				stmt = connection.prepareStatement(query + " LIMIT ?,?");
+				stmt = connection.prepareStatement(query.append(" LIMIT ?,?").toString());
 				stmt.setLong(2, offset.intValue());
 				stmt.setLong(3, limit.intValue());
 			}
@@ -207,7 +222,9 @@ public class StoryDAO {
 			rs = stmt.executeQuery();
 			
 			while(rs.next()) {
-				result.add(this.loadStory(rs));
+				IRStory story = this.loadStory(rs);
+				story.setStatistics(new IRStoryStats(rs.getLong("views")));
+				result.add(story);
 			}
 		}
 		catch(Exception ex) {
@@ -308,5 +325,19 @@ public class StoryDAO {
 		}
 		
 		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Enumeration for the expected order of stories
+	 * @author andres
+	 *
+	 */
+	public static enum StoriesOrder {
+		MOST_VIEWED,
+		BEST_RANKED,
+		ALPHABETICALLY
 	}
 }

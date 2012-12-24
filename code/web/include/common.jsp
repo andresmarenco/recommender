@@ -8,5 +8,6 @@
 <fmt:setBundle basename="recommender.web.i18n.default"/>
 
 <jsp:useBean id="credential" class="recommender.beans.IRUser" scope="session" />
+<jsp:useBean id="viewTypeBean" class="recommender.web.controller.StoryViewTypeBean" scope="application" />
 
 <% session = request.getSession(true); %>

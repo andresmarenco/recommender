@@ -6,11 +6,13 @@
 	<jsp:setProperty name="recommendationBean" property="current_story" value="${story}" />
 </jsp:useBean>
 
+<c:set var="viewTypeRecommendation" value="${viewTypeBean.view_types['recommendation'].id}" />
+
 <div id="story-recommender">
 	<c:forEach items="${recommendationBean.recommendations}" var="recommendation">
 		<div class="recommendation">
 			<div class="title">
-				<a href="./story?id=${recommendation.id}">
+				<a href="./story?id=${recommendation.id}&vt=${viewTypeRecommendation}">
 					<c:out value="${recommendation.title}" />
 				</a>
 			</div>

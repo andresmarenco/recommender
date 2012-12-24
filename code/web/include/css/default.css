@@ -162,6 +162,13 @@ div#main div#content .found-story .title {
 }
 
 
+div#main div#content .found-story .info {
+	color: gray;
+	font-size: small;
+	font-style: italic;
+}
+
+
 div#main div#content .found-story .text {
 }
 

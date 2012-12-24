@@ -14,6 +14,7 @@
   		
   		<div id="main">
   			<jsp:include page="./include/browser.jsp" />
+  			<c:set var="viewTypeSearch" value="${viewTypeBean.view_types['search'].id}" />
   			
   			<div id="content">
   				<c:forEach items="${errors['default']}" var="field_error"><div><span class="error"><fmt:message key="${field_error}" /></span></div></c:forEach>
@@ -28,7 +29,7 @@
   				<c:forEach items="${results}" var="story">
   					<div class="found-story">
   						<div class="title">
-  							<a href="${pageContext.request.contextPath}/story?id=${story.id}">
+  							<a href="${pageContext.request.contextPath}/story?id=${story.id}&vt=${viewTypeSearch}">
   								<c:out value="${story.title}" />
   							</a>
   						</div>

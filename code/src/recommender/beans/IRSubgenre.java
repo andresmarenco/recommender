@@ -2,7 +2,7 @@ package recommender.beans;
 
 import java.io.Serializable;
 
-public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
+public class IRSubgenre implements Serializable {
 
 	private static final long serialVersionUID = 201212101440L;
 	
@@ -14,7 +14,8 @@ public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 	 * Default Constructor
 	 */
 	public IRSubgenre() {
-		
+		super();
+		this.clear();
 	}
 	
 	
@@ -43,7 +44,18 @@ public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 		this.total = total;
 	}
 
+	
+	
+	/**
+	 * Clears all the fields of the object
+	 */
+	public void clear() {
+		this.id = Long.MIN_VALUE;
+		this.name = null;
+	}
 
+
+	
 	/**
 	 * @return the id
 	 */
@@ -87,14 +99,38 @@ public class IRSubgenre implements Serializable, Comparable<IRSubgenre> {
 	public void setTotal(int total) {
 		this.total = total;
 	}
-
-
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
-	public int compareTo(IRSubgenre other) {
-		return Long.valueOf(this.getId()).compareTo(other.getId());
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
 	}
-	
-	
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IRSubgenre other = (IRSubgenre) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+
 	@Override
 	public String toString() {
 		return this.getName();

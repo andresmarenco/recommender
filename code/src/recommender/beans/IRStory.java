@@ -12,6 +12,7 @@ public class IRStory implements Serializable {
 	private String title;
 	private String text;
 	private List<IRKeyword> keywords;
+	private IRStoryStats statistics;
 	
 	
 	/**
@@ -28,12 +29,13 @@ public class IRStory implements Serializable {
 	/**
 	 * Clears all the fields of the object
 	 */
-	private void clear() {
+	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.code = null;
 		this.title = null;
 		this.text = null;
 		this.keywords = null;
+		this.statistics = null;
 	}
 
 
@@ -126,6 +128,26 @@ public class IRStory implements Serializable {
 	 */
 	public void setKeywords(List<IRKeyword> keywords) {
 		this.keywords = keywords;
+	}
+
+
+
+
+	/**
+	 * @return the statistics
+	 */
+	public IRStoryStats getStatistics() {
+		return statistics;
+	}
+
+
+
+
+	/**
+	 * @param statistics the statistics to set
+	 */
+	public void setStatistics(IRStoryStats statistics) {
+		this.statistics = statistics;
 	}
 	
 	

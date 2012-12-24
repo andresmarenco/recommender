@@ -48,12 +48,17 @@
   					<div id="pagination-top"></div>
   				</div>
   				
+  				<c:set var="viewTypeBrowser" value="${viewTypeBean.view_types['browser'].id}" />
+  				
   				<c:forEach items="${stories}" var="story">
   					<div class="found-story">
   						<div class="title">
-  							<a href="${pageContext.request.contextPath}/story?id=${story.id}">
+  							<a href="${pageContext.request.contextPath}/story?id=${story.id}&vt=${viewTypeBrowser}">
   								<c:out value="${story.title}" />
   							</a>
+  						</div>
+  						<div class="info">
+  							<fmt:message key="story.views" />: <c:out value="${story.statistics.views}" />
   						</div>
   						<div class="text">
   							<c:out value="${story.text}" />

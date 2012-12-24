@@ -64,7 +64,7 @@ public class BrowserController extends FormActionServlet {
 	    		StoryDAO storyDAO = new StoryDAO();
 	    		IRSubgenre subgenre = storyDAO.loadSubgenre(this.subgenreId.longValue());
 	    		
-	    		List<IRStory> stories = storyDAO.listStories(subgenre, results, (Math.max(start - 1, 0) * results));
+	    		List<IRStory> stories = storyDAO.listStories(subgenre, results, (Math.max(start - 1, 0) * results), StoryDAO.StoriesOrder.MOST_VIEWED);
 	    		
 	    		request.setAttribute("subgenre", subgenre);
 	    		request.setAttribute("start", start);

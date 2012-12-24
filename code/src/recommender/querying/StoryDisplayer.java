@@ -3,9 +3,10 @@ package recommender.querying;
 import java.util.Queue;
 
 import recommender.beans.IRStory;
+import recommender.beans.IRStoryViewType;
 import recommender.beans.IRUser;
+import recommender.dataaccess.EventDAO;
 import recommender.dataaccess.StoryDAO;
-import recommender.dataaccess.UserDAO;
 import recommender.utils.RecommenderException;
 
 public class StoryDisplayer {
@@ -25,10 +26,11 @@ public class StoryDisplayer {
 	 * @param story_id Id of the story to show
 	 * @param user User who views the story
 	 * @param story_session Current session of viewed stories
+	 * @param view_type_id How the user finds the story
 	 * @return Found story
 	 * @throws RecommenderException
 	 */
-	public IRStory showStory(long story_id, IRUser user, Queue<Long> story_session) throws RecommenderException {
+	public IRStory showStory(long story_id, IRUser user, Queue<Long> story_session, Long view_type_id) throws RecommenderException {
 		IRStory story = null;
 		
 		try
@@ -36,12 +38,15 @@ public class StoryDisplayer {
 			StoryDAO storyDAO = new StoryDAO();
 			story = storyDAO.loadStory(story_id, false);
 			
-			if(user != null) {
-				UserDAO userDAO = new UserDAO();
-				userDAO.logViewedStory(user, story);
+			if(story != null) {
+				// Log the event
+				EventDAO eventDAO = new EventDAO();
+				IRStoryViewType viewType = (view_type_id != null) ? eventDAO.loadViewType(view_type_id) : null;
+				eventDAO.logViewedStory(user, story, viewType);
+				
+				// Enqueue the viewed story in the session
+				story_session.offer(story_id);
 			}
-			
-			story_session.offer(story_id);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();

@@ -91,6 +91,11 @@ public class AuthController extends FormActionServlet {
     public void onLogout() throws ServletException, IOException {
     	try
     	{
+    		IRUser user = (IRUser)session.getAttribute("credential");
+    		
+    		UserDAO userDAO = new UserDAO();
+    		userDAO.logout(user);
+    		
     		session.removeAttribute("credential");
 			session.invalidate();
     		this.setDefaultRedirect(this.getServletContext().getContextPath() + "/index.jsp");
