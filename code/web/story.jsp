@@ -9,63 +9,17 @@
   <head>
     <title><fmt:message key="system_name" /></title>
     <script type="text/javascript" src="./include/js/jquery.js"></script>
+    <script type="text/javascript" src="./include/js/story.js"></script>
     
     <link rel="stylesheet" type="text/css" href="./include/css/default.css">
     
     <script type="text/javascript">
+    	var story_id = '${story.id}';
+    
 	    $(document).ready(function(){
 	    	$("#like-container").click($.parseJSON('${score != like_score}') ? likeStory : removeScoreStory);
 	    	$("#dislike-container").click($.parseJSON('${score != dislike_score}') ? dislikeStory : removeScoreStory);
 	    });
-    
-    
-    	function likeStory() {
-    		$.post("./score.do", { action: 'LikeStory', story_id: '${story.id}' },
-    				function(data) {
-						$("#like-container").off('click');
-						$("#like-container").click(removeScoreStory);
-						
-						$("#dislike-container").off('click');
-						$("#dislike-container").click(dislikeStory);
-						
-						$("#dislike-image").attr("src", "./include/img/dislike.gif");
-						$("#like-image").attr("src", "./include/img/liked.gif");
-	    			}
-    		);
-    	}
-    	
-    	
-    	function dislikeStory() {
-    		$.post("./score.do", { action: 'DislikeStory', story_id: '${story.id}' },
-    				function(data) {
-						$("#dislike-container").off('click');
-						$("#dislike-container").click(removeScoreStory);
-						
-						$("#like-container").off('click');
-						$("#like-container").click(likeStory);
-						
-						$("#dislike-image").attr("src", "./include/img/disliked.gif");
-						$("#like-image").attr("src", "./include/img/like.gif");
-	    			}
-    		);
-    	}
-    	
-    	
-    	function removeScoreStory() {
-    		$.post("./score.do", { action: 'RemoveScoreStory', story_id: '${story.id}' },
-    				function(data) {
-						$("#like-container").off('click');
-						$("#dislike-container").off('click');
-						
-						$("#like-container").click(likeStory);
-						$("#dislike-container").click(dislikeStory);
-						
-						$("#dislike-image").attr("src", "./include/img/dislike.gif");
-						$("#like-image").attr("src", "./include/img/like.gif");
-	    			}
-    		);
-    	}
-    
     </script>
   </head>
  

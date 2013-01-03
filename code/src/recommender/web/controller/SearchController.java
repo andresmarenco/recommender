@@ -1,10 +1,7 @@
 package recommender.web.controller;
 
-import java.util.List;
-
 import javax.servlet.annotation.WebServlet;
 
-import recommender.beans.IRStory;
 import recommender.querying.QueryManager;
 import recommender.utils.RecommenderException;
 import recommender.web.FormActionServlet;
@@ -16,8 +13,12 @@ import recommender.web.WebUtil;
 @WebServlet(name = "search.do", urlPatterns = { "/search.do" })
 public class SearchController extends FormActionServlet {
 	private static final long serialVersionUID = 201212100042L;
+	
+	public static final int DEFAULT_RESULTS_PER_PAGE = 20;
     
 	private String query;
+	private Integer start;
+	private Integer results;
 	
 	
     /**
@@ -38,6 +39,10 @@ public class SearchController extends FormActionServlet {
     	{
     		query = request.getParameter("query");
     		query = (query != null) ? query.trim() : "";
+    		start = WebUtil.getIntegerParameter(request, "start");
+    		if(start == null) start = 1;
+    		results = WebUtil.getIntegerParameter(request, "results");
+    		if(results == null) results = DEFAULT_RESULTS_PER_PAGE;
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -54,10 +59,18 @@ public class SearchController extends FormActionServlet {
     public void onSearch() {
     	try
     	{
+    		int offset = (Math.max(start - 1, 0) * results);
+    		
     		QueryManager queryManager = new QueryManager();
+    		QueryManager.QueryResult result = queryManager.search(query, results, offset);
 			
-			List<IRStory> result = queryManager.search(query);
-			request.setAttribute("results", result);
+    		request.setAttribute("start", start);
+    		request.setAttribute("results", results);
+    		request.setAttribute("stories", result.getStories());
+    		request.setAttribute("complete_size", result.getComplete_size());
+    		
+    		request.setAttribute("first_story", Math.min(offset + 1, result.getComplete_size()));
+    		request.setAttribute("last_story", Math.min(offset + results, result.getComplete_size()));
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
