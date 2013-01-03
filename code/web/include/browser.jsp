@@ -1,6 +1,6 @@
 <%@ include file="../include/common.jsp" %>
 
-<jsp:useBean id="browserBean" class="recommender.web.controller.BrowserBean" scope="page" />
+<jsp:useBean id="browserBean" class="recommender.web.beans.BrowserBean" scope="page" />
 
 <div id="story-browser">
 	<div class="browser-header">

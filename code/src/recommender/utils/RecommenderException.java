@@ -21,6 +21,7 @@ public class RecommenderException extends Exception {
 	public static final String MSG_ERROR_LOGGING_EVENT = "error.logging_event";
 	public static final String MSG_REQUIRED_FIELD = "error.required_field";
 	public static final String MSG_UNKNOWN_USER = "error.unknown_user";
+	public static final String MSG_UNKNOWN_SUBGENRE = "error.unknown_subgenre";
 	public static final String MSG_INVALID_PASSWORD = "error.invalid_password";
 	public static final String MSG_INACTIVE_USER = "error.inactive_user";
 	public static final String MSG_ERROR_TERRIER_RETRIEVAL = "error.terrier.retrieval";

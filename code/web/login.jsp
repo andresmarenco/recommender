@@ -31,6 +31,7 @@
   					<div><label class="form-label"></label><input type="submit" id="btnLogin" value="<fmt:message key="auth.login" />" /></div>
   					
   					<input type="hidden" name="action" id="auth_action" value="Login" />
+  					<input type="hidden" name="return_url" value="${param['return_url']}" />
   				</form>
   			</div>
   			

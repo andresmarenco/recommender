@@ -44,6 +44,15 @@
   			<div id="content">
   				<c:forEach items="${errors['default']}" var="field_error"><div><span class="error"><fmt:message key="${field_error}" /></span></div></c:forEach>
   				
+  				<h2><fmt:message key="subgenre" />: <c:choose><c:when test="${!subgenre.name.isEmpty()}"><c:out value="${subgenre.name}" /></c:when><c:otherwise><fmt:message key="undefined" /></c:otherwise></c:choose></h2>
+  				<div class="results-header">
+  					<fmt:message key="story.showing">
+  						<fmt:param value="${first_story}" />
+  						<fmt:param value="${last_story}" />
+  						<fmt:param value="${subgenre.total}" />
+  					</fmt:message>
+  				</div>
+  				
   				<div class="pagination">
   					<div id="pagination-top"></div>
   				</div>

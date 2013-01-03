@@ -1,6 +1,6 @@
 <%@ include file="../include/common.jsp" %>
 
-<jsp:useBean id="recommendationBean" class="recommender.web.controller.RecommendationBean" scope="page">
+<jsp:useBean id="recommendationBean" class="recommender.web.beans.RecommendationBean" scope="page">
 	<jsp:setProperty name="recommendationBean" property="user" value="${credential}" />
 	<jsp:setProperty name="recommendationBean" property="story_session" value="${story_session}" />
 	<jsp:setProperty name="recommendationBean" property="current_story" value="${story}" />

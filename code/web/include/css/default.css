@@ -9,6 +9,11 @@ body {
 }
 
 
+h2 {
+	margin-bottom: 0;
+}
+
+
 div#wrapper {
 	width: 1000px;
 	margin: 0 auto;
@@ -150,6 +155,7 @@ div#main div#content-login {
 
 div#main div#content .results-header {
 	margin: 5px 0;
+	margin-bottom: 20px;
 }
 
 
@@ -275,4 +281,10 @@ div#footer {
 .button:focus,
 .light-theme a:focus {
 	outline: none;
+}
+
+
+
+.button-img {
+	cursor: pointer;
 }

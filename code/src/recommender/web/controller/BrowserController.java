@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import recommender.beans.IRStory;
 import recommender.beans.IRSubgenre;
 import recommender.dataaccess.StoryDAO;
+import recommender.utils.RecommenderException;
 import recommender.web.FormActionServlet;
 import recommender.web.WebUtil;
 
@@ -63,13 +64,26 @@ public class BrowserController extends FormActionServlet {
     		if(this.subgenreId != null) {
 	    		StoryDAO storyDAO = new StoryDAO();
 	    		IRSubgenre subgenre = storyDAO.loadSubgenre(this.subgenreId.longValue());
+	    		int offset = (Math.max(start - 1, 0) * results);
 	    		
-	    		List<IRStory> stories = storyDAO.listStories(subgenre, results, (Math.max(start - 1, 0) * results), StoryDAO.StoriesOrder.MOST_VIEWED);
+	    		if((subgenre != null) && (subgenre.getId() != Long.MIN_VALUE)) {
+	    			List<IRStory> stories = storyDAO.listStories(subgenre, results, offset, StoryDAO.StoriesOrder.MOST_VIEWED);
+		    		
+		    		request.setAttribute("subgenre", subgenre);
+		    		request.setAttribute("start", start);
+		    		request.setAttribute("results", results);
+		    		request.setAttribute("stories", stories);
+		    		
+		    		request.setAttribute("first_story", Math.min(offset + 1, subgenre.getTotal()));
+		    		request.setAttribute("last_story", Math.min(offset + results, subgenre.getTotal()));
+	    		} else {
+	    			WebUtil.addFieldError(errors, "default", RecommenderException.MSG_UNKNOWN_SUBGENRE);
+	    			
+	    			request.setAttribute("first_story", 0);
+		    		request.setAttribute("last_story", 0);
+	    		}
 	    		
-	    		request.setAttribute("subgenre", subgenre);
-	    		request.setAttribute("start", start);
-	    		request.setAttribute("results", results);
-	    		request.setAttribute("stories", stories);
+	    		
     		}
     	}
 		catch(Exception ex) {

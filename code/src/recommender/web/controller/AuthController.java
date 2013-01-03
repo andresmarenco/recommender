@@ -19,6 +19,7 @@ public class AuthController extends FormActionServlet {
     
 	private String username;
 	private String password;
+	private String return_url;
 	
 	
     /**
@@ -40,6 +41,8 @@ public class AuthController extends FormActionServlet {
     		username = request.getParameter("username");
 			username = (username != null) ? username.trim() : "";
 			password = request.getParameter("password");
+			return_url = request.getParameter("return_url");
+			return_url = (return_url != null) ? return_url.trim() : this.getServletContext().getContextPath() + "/index.jsp";
 			
 			WebUtil.checkRequiredField(errors, "username", username);
     		WebUtil.checkRequiredField(errors, "password", password);
@@ -67,7 +70,7 @@ public class AuthController extends FormActionServlet {
 				
 				if(user.isLogged()) {
 					session.setAttribute("credential", user);
-					this.setDefaultRedirect(this.getServletContext().getContextPath() + "/index.jsp");
+					this.setDefaultRedirect(return_url);
 				}
     		}
 		}

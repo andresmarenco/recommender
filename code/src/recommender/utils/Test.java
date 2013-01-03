@@ -11,7 +11,7 @@ import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.UserDAO;
 import recommender.querying.RecommendationManager;
 import recommender.querying.StoryDisplayer;
-import recommender.web.controller.StoryViewTypeBean;
+import recommender.web.beans.StoryViewTypeBean;
 
 public class Test {
 

@@ -20,7 +20,7 @@
   				<c:forEach items="${errors['default']}" var="field_error"><div><span class="error"><fmt:message key="${field_error}" /></span></div></c:forEach>
   			
   				<div class="results-header">
-  					<fmt:message key="search.results">
+  					<fmt:message key="story.showing">
   						<fmt:param value="${results.size()}" />
   						<fmt:param value="${param['query']}" />
   					</fmt:message>

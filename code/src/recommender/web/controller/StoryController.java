@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import recommender.beans.IRStory;
 import recommender.beans.IRUser;
+import recommender.dataaccess.StoryDAO;
 import recommender.querying.StoryDisplayer;
 import recommender.utils.RecommenderException;
 import recommender.web.WebUtil;
@@ -45,9 +46,6 @@ public class StoryController extends HttpServlet {
 		try
 		{
 			HttpSession session = request.getSession(true);
-			
-			/*String string_story_id = request.getParameter("id");
-			Long story_id = (string_story_id != null) ? Long.parseLong(string_story_id) : null;*/
 			Long story_id = WebUtil.getLongParameter(request, "id");
 			
 			if(story_id != null) {
@@ -62,6 +60,10 @@ public class StoryController extends HttpServlet {
 				StoryDisplayer storyDisplayer = new StoryDisplayer();
 				IRStory story = storyDisplayer.showStory(story_id, user, story_session, view_type);
 				
+				StoryDAO storyDAO = new StoryDAO();
+				float score = storyDAO.getStoryScore(story, user);
+			
+				request.setAttribute("score", score);
 				request.setAttribute("story", story);
 				session.setAttribute("story_session", story_session);
 			}

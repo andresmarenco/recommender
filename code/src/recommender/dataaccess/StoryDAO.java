@@ -11,6 +11,7 @@ import recommender.beans.IRKeyword;
 import recommender.beans.IRStory;
 import recommender.beans.IRStoryStats;
 import recommender.beans.IRSubgenre;
+import recommender.beans.IRUser;
 import recommender.utils.DBUtil;
 
 public class StoryDAO {
@@ -34,7 +35,7 @@ public class StoryDAO {
 	 * @param subfields True if only return a substring of the fields
 	 * @return Story Object or null
 	 */
-	public IRStory loadStory(long id, boolean subfields) throws SQLException {
+	public IRStory loadStory(long id, boolean subfields) {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -320,6 +321,81 @@ public class StoryDAO {
 		}
 		finally {
 			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Sets the score a user gives to a story
+	 * @param story Story to score
+	 * @param user User who gives the score
+	 * @param score Score given
+	 */
+	public void scoreStory(IRStory story, IRUser user, float score) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		
+		try
+		{
+			if((story != null) && (story.getId() != Long.MIN_VALUE) && (user != null) && (user.isLogged())) {
+				connection = _ConnectionManager.getConnection();
+				stmt = connection.prepareStatement("insert into ir_story_user_score (storyId, userId, score) values (?,?,?) on duplicate key update score=values(score)");
+				stmt.setLong(1, story.getId());
+				stmt.setLong(2, user.getId());
+				stmt.setFloat(3, score);
+				
+				stmt.execute();
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Gets the score a user gave to a story
+	 * @param story Scored story
+	 * @param user User who gave the score
+	 * @return Given score or 0
+	 */
+	public float getStoryScore(IRStory story, IRUser user) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		float result = 0.0F;
+		
+		try
+		{
+			if((story != null) && (story.getId() != Long.MIN_VALUE) && (user != null) && (user.getId() != Long.MIN_VALUE)) {
+				connection = _ConnectionManager.getConnection();
+				stmt = connection.prepareStatement("select score from ir_story_user_score where storyId = ? and userId = ?");
+				stmt.setLong(1, story.getId());
+				stmt.setLong(2, user.getId());
+				
+				rs = stmt.executeQuery();
+				
+				if(rs.next()) {
+					result = rs.getFloat("score");
+				}
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally {
 			DBUtil.closeStatement(stmt);
 			DBUtil.closeConnection(connection);
 		}

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import recommender.beans.IRUser;
 import recommender.utils.ReflectionUtil;
 
 public abstract class FormActionServlet extends HttpServlet {
@@ -24,6 +25,18 @@ public abstract class FormActionServlet extends HttpServlet {
 	protected final String view_servlet;
 	private RedirectMethod redirect_method;
 	private String redirect_page;
+	
+	
+	/**
+	 * Default Constructor
+	 */
+	public FormActionServlet() {
+		super();
+        this.errors = new HashMap<String, List<String>>();
+        this.view_servlet = null;
+	}
+	
+	
 	
 	
 	/**
@@ -75,6 +88,10 @@ public abstract class FormActionServlet extends HttpServlet {
 			request.getRequestDispatcher(this.view_servlet).forward(request, response);
 			break;
 		}
+		
+		case NONE: {
+			break;
+		}
 		}
 	}
 	
@@ -117,6 +134,18 @@ public abstract class FormActionServlet extends HttpServlet {
 	
 	
 	
+	
+	/**
+	 * Gets the user currently logged in the session
+	 * @return Logged user
+	 */
+	protected IRUser getUserCredential() {
+		return (IRUser)session.getAttribute("credential");
+	}
+	
+	
+	
+	
 	/**
 	 * Gets the Form Action
 	 * @return String with the Form Action
@@ -131,7 +160,7 @@ public abstract class FormActionServlet extends HttpServlet {
 	 * Defines the default redirect to forward to the View of the Servlet
 	 */
 	protected void setDefaultRedirect() {
-		this.redirect_method = RedirectMethod.FORWARD;
+		this.redirect_method = (this.view_servlet != null) ? RedirectMethod.FORWARD : RedirectMethod.NONE;
 	}
 	
 	
@@ -154,6 +183,7 @@ public abstract class FormActionServlet extends HttpServlet {
 	 */
 	private static enum RedirectMethod {
 		REDIRECT,
-		FORWARD
+		FORWARD,
+		NONE
 	}
 }

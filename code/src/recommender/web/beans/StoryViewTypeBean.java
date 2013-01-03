@@ -1,4 +1,4 @@
-package recommender.web.controller;
+package recommender.web.beans;
 
 import java.io.Serializable;
 import java.util.Hashtable;

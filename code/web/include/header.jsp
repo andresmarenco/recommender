@@ -30,7 +30,7 @@
 			
 			<c:otherwise>
 				<span>
-					<a href="${pageContext.request.contextPath}/login.do"><fmt:message key="auth.login" /></a>
+					<a href="${pageContext.request.contextPath}/login.do?return_url=${utl:findReturnUrl(pageContext.request)}"><fmt:message key="auth.login" /></a>
 				</span>
 				<span>|</span>
 				<span>
@@ -38,6 +38,7 @@
 				</span>
 			</c:otherwise>
 		</c:choose>
+		
 	</form>
 	
 	<div class="clear"></div>

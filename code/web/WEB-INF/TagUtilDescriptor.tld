@@ -12,4 +12,11 @@
       java.lang.String escapeNewline(java.lang.String)
     </function-signature>
   </function>
+  <function>
+    <name>findReturnUrl</name>
+    <function-class>recommender.web.TagUtil</function-class>
+    <function-signature>
+      java.lang.String findReturnUrl(javax.servlet.http.HttpServletRequest)
+    </function-signature>
+  </function>
 </taglib>
