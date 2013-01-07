@@ -1,8 +1,6 @@
 package recommender.web.controller;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,8 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import recommender.beans.IRStory;
+import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
 import recommender.dataaccess.StoryDAO;
+import recommender.model.UserModel;
 import recommender.querying.StoryDisplayer;
 import recommender.utils.RecommenderException;
 import recommender.web.WebUtil;
@@ -51,21 +51,22 @@ public class StoryController extends HttpServlet {
 			if(story_id != null) {
 				IRUser user = (IRUser)session.getAttribute("credential");
 				
-				@SuppressWarnings("unchecked")
+				/*@SuppressWarnings("unchecked")
 				Queue<Long> story_session = (Queue<Long>)session.getAttribute("story_session");
-				if(story_session == null) story_session = new LinkedList<Long>();
-				
+				if(story_session == null) story_session = new LinkedList<Long>();*/
 				Long view_type = WebUtil.getLongParameter(request, "vt");
 				
 				StoryDisplayer storyDisplayer = new StoryDisplayer();
-				IRStory story = storyDisplayer.showStory(story_id, user, story_session, view_type);
+				IRStory story = storyDisplayer.showStory(story_id, user, view_type);
 				
 				StoryDAO storyDAO = new StoryDAO();
-				float score = storyDAO.getStoryScore(story, user);
-			
-				request.setAttribute("score", score);
+				IRStoryUserStatistics stats = storyDAO.getStoryUserStatistics(story, user);
+				
+				UserModel user_model = UserModel.getSessionInstance(session, user);
+				user_model.viewedStory(story, stats);
+				
+				request.setAttribute("score", stats.getScore());
 				request.setAttribute("story", story);
-				session.setAttribute("story_session", story_session);
 			}
 		}
 		catch(RecommenderException ex) {

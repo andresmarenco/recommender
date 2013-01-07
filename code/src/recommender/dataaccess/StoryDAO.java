@@ -9,7 +9,7 @@ import java.util.List;
 
 import recommender.beans.IRKeyword;
 import recommender.beans.IRStory;
-import recommender.beans.IRStoryStats;
+import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRSubgenre;
 import recommender.beans.IRUser;
 import recommender.utils.DBUtil;
@@ -224,7 +224,7 @@ public class StoryDAO {
 			
 			while(rs.next()) {
 				IRStory story = this.loadStory(rs);
-				story.setStatistics(new IRStoryStats(rs.getLong("views")));
+				story.setViews(rs.getLong("views"));
 				result.add(story);
 			}
 		}
@@ -379,7 +379,7 @@ public class StoryDAO {
 		
 		try
 		{
-			if((story != null) && (story.getId() != Long.MIN_VALUE) && (user != null) && (user.getId() != Long.MIN_VALUE)) {
+			if((user != null) && (user.getId() != Long.MIN_VALUE) && (story != null) && (story.getId() != Long.MIN_VALUE)) {
 				connection = _ConnectionManager.getConnection();
 				stmt = connection.prepareStatement("select score from ir_story_user_score where storyId = ? and userId = ?");
 				stmt.setLong(1, story.getId());
@@ -389,6 +389,52 @@ public class StoryDAO {
 				
 				if(rs.next()) {
 					result = rs.getFloat("score");
+				}
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Gets the user statistics (views, score...) of the selected story
+	 * @param story Selected Story
+	 * @param user Selected User
+	 * @return User Statistics
+	 */
+	public IRStoryUserStatistics getStoryUserStatistics(IRStory story, IRUser user) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		IRStoryUserStatistics result = null;
+		
+		try
+		{
+			result = new IRStoryUserStatistics();
+			result.setStory(story);
+			
+			if((user != null) && (user.getId() != Long.MIN_VALUE) && (story != null) && (story.getId() != Long.MIN_VALUE)) {
+				connection = _ConnectionManager.getConnection();
+				stmt = connection.prepareStatement("select us.score, (select count(1) from ir_story_view_log as ul inner join ir_event_log as el on el.id = ul.id where el.userId = us.userId and ul.storyId = us.storyId) as views from ir_story_user_score as us where us.storyId = ? and us.userId = ?");
+				stmt.setLong(1, story.getId());
+				stmt.setLong(2, user.getId());
+				
+				rs = stmt.executeQuery();
+				result.setUser(user);
+							
+				if(rs.next()) {
+					result.setScore(rs.getFloat("score"));
+					result.setViews(rs.getLong("views"));
 				}
 			}
 		}

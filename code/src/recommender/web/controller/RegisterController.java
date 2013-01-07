@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 
 import recommender.beans.IRUser;
 import recommender.dataaccess.UserDAO;
+import recommender.model.UserModel;
 import recommender.utils.RecommenderException;
 import recommender.utils.ValidationUtil;
 import recommender.web.FormActionServlet;
@@ -73,8 +74,8 @@ public class RegisterController extends FormActionServlet {
 				user = userDAO.createUser(user, true);
 				
 				session.setAttribute("credential", user);
+				session.setAttribute("user_model", new UserModel());
 				this.setDefaultRedirect(this.getServletContext().getContextPath() + "/index.jsp");
-				
 			}
 		}
     	catch(RecommenderException ex) {

@@ -45,18 +45,6 @@ public class ConnectionManager {
 	
 	
 	
-	/**
-	 * Gets a connection to the Database.
-	 * All the connections should be closed after use.
-	 * @return Connection
-	 * @throws SQLException
-	 */
-	public Connection getConnection() throws SQLException {
-		return _Connection.getConnection();
-	}
-	
-	
-	
 	
 	/**
      * Returns an instance of the class
@@ -78,6 +66,19 @@ public class ConnectionManager {
 		    return null;
 		}
     }
+	
+	
+	
+    
+	/**
+	 * Gets a connection to the Database.
+	 * All the connections should be closed after use.
+	 * @return Connection
+	 * @throws SQLException
+	 */
+	public Connection getConnection() throws SQLException {
+		return _Connection.getConnection();
+	}
     
     
     

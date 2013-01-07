@@ -12,7 +12,7 @@ public class IRStory implements Serializable {
 	private String title;
 	private String text;
 	private List<IRKeyword> keywords;
-	private IRStoryStats statistics;
+	private Long views;
 	
 	
 	/**
@@ -35,7 +35,7 @@ public class IRStory implements Serializable {
 		this.title = null;
 		this.text = null;
 		this.keywords = null;
-		this.statistics = null;
+		this.views = null;
 	}
 
 
@@ -134,22 +134,53 @@ public class IRStory implements Serializable {
 
 
 	/**
-	 * @return the statistics
+	 * @return the views
 	 */
-	public IRStoryStats getStatistics() {
-		return statistics;
+	public Long getViews() {
+		return views;
 	}
 
 
 
 
 	/**
-	 * @param statistics the statistics to set
+	 * @param views the views to set
 	 */
-	public void setStatistics(IRStoryStats statistics) {
-		this.statistics = statistics;
+	public void setViews(Long views) {
+		this.views = views;
 	}
-	
-	
-	
+
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IRStory other = (IRStory) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 }

@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 
 import recommender.beans.IRUser;
 import recommender.dataaccess.UserDAO;
+import recommender.model.UserModel;
 import recommender.utils.RecommenderException;
 import recommender.web.FormActionServlet;
 import recommender.web.WebUtil;
@@ -70,6 +71,7 @@ public class AuthController extends FormActionServlet {
 				
 				if(user.isLogged()) {
 					session.setAttribute("credential", user);
+					session.setAttribute("user_model", new UserModel(user));
 					this.setDefaultRedirect(return_url);
 				}
     		}
@@ -100,6 +102,7 @@ public class AuthController extends FormActionServlet {
     		userDAO.logout(user);
     		
     		session.removeAttribute("credential");
+    		session.removeAttribute("user_model");
 			session.invalidate();
     		this.setDefaultRedirect(this.getServletContext().getContextPath() + "/index.jsp");
     	}

@@ -67,7 +67,7 @@
   							</a>
   						</div>
   						<div class="info">
-  							<fmt:message key="story.views" />: <c:out value="${story.statistics.views}" />
+  							<fmt:message key="story.views" />: <c:out value="${story.views}" />
   						</div>
   						<div class="text">
   							<c:out value="${story.text}" />

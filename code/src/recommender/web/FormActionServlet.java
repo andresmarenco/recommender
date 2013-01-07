@@ -176,6 +176,19 @@ public abstract class FormActionServlet extends HttpServlet {
 	
 	
 	
+	
+	/**
+	 * Finds an attribute in the session and casts it to the specified class
+	 * @param name Name of the attribute
+	 * @param clazz Class of the attribute
+	 * @return Casted Attribute or null
+	 */
+	protected <T> T getSessionAttribute(String name, Class<T> clazz) {
+		return clazz.cast(this.session.getAttribute(name));
+	}
+	
+	
+	
 	/**
 	 * Methods to Redirect the Servlet
 	 * @author andres

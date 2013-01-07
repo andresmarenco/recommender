@@ -5,6 +5,7 @@ import javax.servlet.annotation.WebServlet;
 import recommender.beans.IRStory;
 import recommender.beans.IRUser;
 import recommender.dataaccess.StoryDAO;
+import recommender.model.UserModel;
 import recommender.web.FormActionServlet;
 import recommender.web.WebUtil;
 
@@ -76,6 +77,9 @@ public class StoryScoreController extends FormActionServlet {
         			story.setId(story_id.longValue());
         			
         			storyDAO.scoreStory(story, user, score);
+        			
+        			UserModel user_model = UserModel.getSessionInstance(session, user);
+        			user_model.scoredStory(story, score);
         		}
     		}
     	}

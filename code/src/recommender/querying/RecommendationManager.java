@@ -1,6 +1,5 @@
 package recommender.querying;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;

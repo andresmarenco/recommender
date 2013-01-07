@@ -25,12 +25,11 @@ public class StoryDisplayer {
 	 * Shows the story, and keeps a log of the user's stories views (if logged in)
 	 * @param story_id Id of the story to show
 	 * @param user User who views the story
-	 * @param story_session Current session of viewed stories
 	 * @param view_type_id How the user finds the story
 	 * @return Found story
 	 * @throws RecommenderException
 	 */
-	public IRStory showStory(long story_id, IRUser user, Queue<Long> story_session, Long view_type_id) throws RecommenderException {
+	public IRStory showStory(long story_id, IRUser user, Long view_type_id) throws RecommenderException {
 		IRStory story = null;
 		
 		try
@@ -43,9 +42,6 @@ public class StoryDisplayer {
 				EventDAO eventDAO = new EventDAO();
 				IRStoryViewType viewType = (view_type_id != null) ? eventDAO.loadViewType(view_type_id) : null;
 				eventDAO.logViewedStory(user, story, viewType);
-				
-				// Enqueue the viewed story in the session
-				story_session.offer(story_id);
 			}
 		}
 		catch(Exception ex) {
