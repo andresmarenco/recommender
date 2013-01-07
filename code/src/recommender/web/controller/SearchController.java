@@ -62,7 +62,7 @@ public class SearchController extends FormActionServlet {
     		int offset = (Math.max(start - 1, 0) * results);
     		
     		QueryManager queryManager = new QueryManager();
-    		QueryManager.QueryResult result = queryManager.search(query, results, offset);
+    		QueryManager.QueryResult result = queryManager.search(query,  offset, results);
 			
     		request.setAttribute("start", start);
     		request.setAttribute("results", results);

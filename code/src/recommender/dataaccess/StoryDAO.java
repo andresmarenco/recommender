@@ -117,7 +117,7 @@ public class StoryDAO {
 	 * @return Story Object
 	 * @throws SQLException
 	 */
-	private IRStory loadStory(ResultSet rs) throws SQLException {
+	public IRStory loadStory(ResultSet rs) throws SQLException {
 		IRStory result = new IRStory();
 		
 		result.setId(rs.getLong("id"));

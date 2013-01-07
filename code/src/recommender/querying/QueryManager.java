@@ -1,35 +1,134 @@
 package recommender.querying;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import recommender.beans.IRStory;
+import recommender.dataaccess.ConnectionManager;
+import recommender.dataaccess.RetrievalManager;
+import recommender.dataaccess.StoryDAO;
+import recommender.dataaccess.TerrierManager;
+import recommender.utils.DBUtil;
 
 public class QueryManager {
 	
-	public QueryResult search(String query, Integer limit, Integer offset) {
-		// TODO: Make the real search!!!
+	RetrievalManager retrievalManager;
+	
+	public QueryManager() {
+		super();
+		this.retrievalManager = new RetrievalManager(
+				new TerrierManager(
+						System.getProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH),"data"));
+	}
+
+	public QueryResult search(String query, Integer offset, Integer limit) {
 		QueryResult result =  new QueryResult();
-		int total = 87;
-		result.setComplete_size(total);
-		result.setStories(new ArrayList<IRStory>());
-		result.setOffset(offset.intValue());
-		result.setResults_per_page(limit.intValue());
-		
-		for(int i = 0; i < Math.min(limit.intValue(), total); i++) {
-			IRStory story = new IRStory();
-			story.setId(new Random().nextLong());
-			story.setTitle("TITLE " + story.getId());
-			story.setText("story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId());
-			result.getStories().add(story);
+    	try
+    	{
+			List<IRStory> stories = retrievalManager.searchStories(query, offset, limit);
+    		result.setComplete_size(stories.size());
+    		result.setStories(stories);
+    		result.setOffset(offset.intValue());
+    		result.setResults_per_page(limit.intValue());
+    		
+    	}
+		catch(Exception ex) {
+			ex.printStackTrace();
 		}
 		
+		// if this is reached, then this is an error case. Should return null?
 		return result;
 	}
 	
+//	public QueryResult search(String query, Integer limit, Integer offset) {
+//		// TODO: Make the real search!!!
+//		QueryResult result =  new QueryResult();
+//		int total = 87;
+//		result.setComplete_size(total);
+//		result.setStories(new ArrayList<IRStory>());
+//		result.setOffset(offset.intValue());
+//		result.setResults_per_page(limit.intValue());
+//		
+//		for(int i = 0; i < Math.min(limit.intValue(), total); i++) {
+//			IRStory story = new IRStory();
+//			story.setId(new Random().nextLong());
+//			story.setTitle("TITLE " + story.getId());
+//			story.setText("story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId() + ", story " + story.getId());
+//			result.getStories().add(story);
+//		}
+//		
+//		return result;
+//	}
 	
+//	public List<IRStory> searchWithTerrier(String query, Integer start, Integer limit) {
+//		List<IRStory> result = new ArrayList<IRStory>();
+//		
+//    	try
+//    	{
+//			RetrievalManager retManager = new RetrievalManager(
+//					new TerrierManager(
+//							System.getProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH),"data"));
+//            result = retManager.searchStories(query, start, limit);
+//    	}
+//		catch(Exception ex) {
+//			ex.printStackTrace();
+//		}
+//		
+//		// if this is reached, then this is an error case. Should return null?
+//		return result;
+//	}
+	
+//	public List<IRStory> search2(String query) {
+//		List<IRStory> result = new ArrayList<IRStory>();
+//		StoryDAO dao = new StoryDAO();
+//		
+//		// TODO: Make the real search!!!
+//		Connection connection = null;
+//		PreparedStatement stmt = null;
+//		java.sql.ResultSet rs = null;
+//		String sqlquery = "";
+//		
+//		try
+//		{
+//			//IRStory result = null;
+//			
+//			sqlquery = "select s.*, c.`Text` " +
+//					"from story as s inner join content as c on c.id = s.contentId " + 
+//					"where title LIKE ? OR text LIKE ?";
+//			connection = ConnectionManager.getInstance().getConnection();
+//			stmt = connection.prepareStatement(sqlquery);
+//			stmt.setString(1, "%" + query + "%");
+//			stmt.setString(2, "%" + query + "%");
+//			
+//			rs = stmt.executeQuery();
+//			
+//			while(rs.next()) {
+//				result.add(dao.loadStory(rs));
+//			}
+//			
+//			return result;
+//		}
+//		catch(Exception ex) {
+//			
+//			System.out.println(sqlquery);
+//			ex.printStackTrace();
+//		}
+//		finally {
+//			if(rs != null)
+//				DBUtil.closeResultSet(rs);
+//			DBUtil.closeStatement(stmt);
+//			DBUtil.closeConnection(connection);
+//		}
+//		
+//		// if this is reached, then this is an error case. Should return null?
+//		return result;
+//	}
+	
+
 	
 	
 	/**

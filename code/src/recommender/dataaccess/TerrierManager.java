@@ -13,20 +13,34 @@ public class TerrierManager {
 	/** Terrier Home Key for the JNDI Resource in the Context file */
 	private static final String TERRIER_HOME_CONTEXT_KEY = "terrierHome";
 	
-	/** Current instance of the class for the Singleton Pattern */
-	private static TerrierManager _ClassInstance;
+	/** The key to identify the path of the index used for searching */
+	public static final String TERRIER_SEARCH_INDEX_PATH = "search_index_path";
+
+	/** The key to identify the path of the index used for searching */
+	public static final String TERRIER_RECOMMENDER_INDEX_PATH = "recommender_index_path";
 	
+//	/**
+//	 * Default Constructor
+//	 */
+//	TerrierManager() {
+//		this.setTerrierHome();
+//		index = Index.createIndex();
+//		manager = new Manager(index);
+//	}
 	
 	/**
-	 * Default Constructor
+	 * Specialized constructor to use a different index, not the default in terrier home.
+	 * @param indexPath path on the disk
+	 * @param indexPrefix the prefix that was used at indexing. Default value is "data".
 	 */
-	private TerrierManager() {
+	public TerrierManager(String indexPath, String indexPrefix) {
 		this.setTerrierHome();
-		index = Index.createIndex();
+		if(indexPrefix == null || indexPrefix.isEmpty())
+			 indexPrefix = "data";
+		//index = Index.createIndex();
+		index = Index.createIndex(indexPath, indexPrefix);
 		manager = new Manager(index);
 	}
-	
-	
 	
 	
 	/**
@@ -47,28 +61,25 @@ public class TerrierManager {
 		}
 	}
 	
-	
-	
-	
-	/**
-     * Returns an instance of the class
-     * @return Singleton instance of the class
-     */
-	public synchronized static TerrierManager getInstance() {
-		try
-		{
-		    if(_ClassInstance == null)
-		    {
-			    _ClassInstance = new TerrierManager();    
-		    }
-		    return _ClassInstance;
-		}
-		catch(Exception ex)
-		{
-            ex.printStackTrace();
-		    return null;
-		}
-	}
+//	/**
+//     * Returns an instance of the class
+//     * @return Singleton instance of the class
+//     */
+//	public synchronized static TerrierManager getInstance() {
+//		try
+//		{
+//		    if(_ClassInstance == null)
+//		    {
+//			    _ClassInstance = new TerrierManager();    
+//		    }
+//		    return _ClassInstance;
+//		}
+//		catch(Exception ex)
+//		{
+//            ex.printStackTrace();
+//		    return null;
+//		}
+//	}
 	
 	
 	/**

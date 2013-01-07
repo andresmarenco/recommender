@@ -9,12 +9,26 @@ import recommender.beans.IRStory;
 import recommender.beans.IRUser;
 import recommender.dataaccess.RetrievalManager;
 import recommender.dataaccess.StoryDAO;
+import recommender.dataaccess.TerrierManager;
 import recommender.utils.RecommenderException;
 
 public class RecommendationManager {
+	
+	RetrievalManager retrievalManager;
 
 	private static final int DEFAULT_RECOMMENDATIONS = 6;
 	
+	
+	
+	public RecommendationManager() {
+		super();
+		this.retrievalManager = new RetrievalManager(
+				new TerrierManager(
+						System.getProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH),"data"));
+	}
+
+
+
 	// TODO: Make a real function for this
 	public List<IRStory> recommendStories(IRUser user, IRStory current_story, Queue<Long> story_session) throws RecommenderException {
 		List<IRStory> result = new ArrayList<IRStory>();
@@ -30,8 +44,7 @@ public class RecommendationManager {
 			
 			System.out.println(ir_query.toString());
 			
-			RetrievalManager rm = new RetrievalManager();
-			result = rm.searchStories(ir_query.toString(), 1, DEFAULT_RECOMMENDATIONS);
+			result = this.retrievalManager.searchStories(ir_query.toString(), 1, DEFAULT_RECOMMENDATIONS);
 			
 			/*for(IRStory story : result) {
 				System.out.println(MessageFormat.format("[{0}] {1}", story.getCode(), story.getText()));
@@ -40,5 +53,4 @@ public class RecommendationManager {
 		
 		return result;
 	}
-	
 }
