@@ -212,7 +212,6 @@ public class RetrievalManager {
 		try {
 			return getStoriesFromResultSet(this.search(mtq, start, results));
 		} catch (RecommenderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

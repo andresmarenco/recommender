@@ -1,5 +1,6 @@
 package recommender.utils;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -11,6 +12,7 @@ import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
 import recommender.dataaccess.UserDAO;
+import recommender.model.ContentUserModel;
 import recommender.model.UserModel;
 import recommender.model.bag.FeatureBag;
 import recommender.querying.QueryManager;
@@ -76,25 +78,17 @@ public class Test {
 	public void TestRecommendations(){
 		IRStory s = new StoryDAO().loadStory(609L, true);
 		
-		RecommendationManager rm = new RecommendationManager();
-		UserModel usermodel = new UserModel() {
-			
-			@Override
-			protected FeatureBag getCurrentFeatureBag() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
-
-		//TODO: fill the usermodel with fake data here
-		/*try {
+		try {
+			IRUser user = new UserDAO().loadUser(1);
+			RecommendationManager rm = new RecommendationManager();
+			UserModel usermodel = new ContentUserModel(user);
 			for(IRStory story : rm.recommendStories(usermodel))
 			{
 				System.out.println(story.getTitle().toString());
 			}
-		} catch (RecommenderException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 }
