@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.terrier.matching.ResultSet;
+
 import recommender.beans.IRStory;
 import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.RetrievalManager;
@@ -29,8 +31,12 @@ public class QueryManager {
 		QueryResult result =  new QueryResult();
     	try
     	{
-			List<IRStory> stories = retrievalManager.searchStories(query, offset, limit);
-    		result.setComplete_size(stories.size());
+			//List<IRStory> stories = retrievalManager.searchStories(query, offset, limit);
+    		ResultSet rs = retrievalManager.search(query);
+    		List<IRStory> stories = retrievalManager.getStoriesFromResultSet(rs).subList(
+    				offset, Math.min(offset+limit-1, rs.getExactResultSize()-1));
+    		
+    		result.setComplete_size(rs.getExactResultSize()-1);
     		result.setStories(stories);
     		result.setOffset(offset.intValue());
     		result.setResults_per_page(limit.intValue());

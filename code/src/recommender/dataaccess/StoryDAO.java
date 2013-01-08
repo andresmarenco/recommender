@@ -43,7 +43,7 @@ public class StoryDAO {
 		
 		try
 		{
-			String query = "select s.*, " + (subfields ? " substring(c.`Text`, 1, 140) as text " : " c.`Text` " ) + " from story as s inner join content as c on c.id = s.contentId where s.id = ?";
+			String query = "select s.*, " + (subfields ? " substring(c.`Text`, 1, 140) as text " : " c.`Text` " ) + ", (select count(1) from `ir_story_view_log` `sl` where (`sl`.`StoryId` = `s`.`Id`)) AS `views` from story as s inner join content as c on c.id = s.contentId where s.id = ?";
 			
 			connection = _ConnectionManager.getConnection();
 			stmt = connection.prepareStatement(query);
@@ -84,7 +84,7 @@ public class StoryDAO {
 		
 		try
 		{
-			String query = "select s.*, " + (subfields ? " concat(substring(c.`Text`, 1, 140), '...') as text " : " c.`Text` " ) + " from story as s inner join content as c on c.id = s.contentId where s.storyCode = ?";
+			String query = "select s.*, " + (subfields ? " concat(substring(c.`Text`, 1, 140), '...') as text " : " c.`Text` " ) + ", (select count(1) from `ir_story_view_log` `sl` where (`sl`.`StoryId` = `s`.`Id`)) AS `views` from story as s inner join content as c on c.id = s.contentId where s.storyCode = ?";
 			
 			connection = _ConnectionManager.getConnection();
 			stmt = connection.prepareStatement(query);
@@ -124,6 +124,7 @@ public class StoryDAO {
 		result.setCode(rs.getString("storyCode"));
 		result.setTitle(rs.getString("title"));
 		result.setText(rs.getString("text"));
+		result.setViews(rs.getLong("views"));
 		
 		// TODO: complete!!!
 		
@@ -223,9 +224,7 @@ public class StoryDAO {
 			rs = stmt.executeQuery();
 			
 			while(rs.next()) {
-				IRStory story = this.loadStory(rs);
-				story.setViews(rs.getLong("views"));
-				result.add(story);
+				result.add(this.loadStory(rs));
 			}
 		}
 		catch(Exception ex) {

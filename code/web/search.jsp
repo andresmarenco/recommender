@@ -65,6 +65,9 @@
   								<c:out value="${story.title}" />
   							</a>
   						</div>
+  						<div class="info">
+  							<fmt:message key="story.views" />: <c:out value="${story.views}" />
+  						</div>
   						<div class="text">
   							<c:out value="${story.text}" />
   						</div>

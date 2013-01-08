@@ -40,7 +40,7 @@ public class RetrievalManager {
 	 * @return List of Stories
 	 * @throws RecommenderException
 	 */
-	private List<IRStory> getStoriesFromResultSet(ResultSet rs) throws RecommenderException {
+	public List<IRStory> getStoriesFromResultSet(ResultSet rs) throws RecommenderException {
 		List<IRStory> result = null;
 		
 		try
