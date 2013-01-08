@@ -17,6 +17,12 @@ public class TerrierManager {
 	/** Terrier Home Key for the JNDI Resource in the Context file */
 	private static final String TERRIER_HOME_CONTEXT_KEY = "terrierHome";
 	
+	/** Terrier Search Index Path Key for the JNDI Resource in the Context file */
+	private static final String TERRIER_SEARCH_INDEX_PATH_CONTEXT_KEY = "terrierSearchIndexPath";
+
+	/** Terrier Recommender Index Path Key for the JNDI Resource in the Context file */
+	private static final String TERRIER_RECOMMENDER_INDEX_PATH_CONTEXT_KEY = "terrierRecommenderIndexPath";
+	
 	/** The key to identify the path of the index used for searching */
 	public static final String TERRIER_SEARCH_INDEX_PATH = "search_index_path";
 
@@ -24,6 +30,28 @@ public class TerrierManager {
 	public static final String TERRIER_RECOMMENDER_INDEX_PATH = "recommender_index_path";
 	
 	private static HashMap<ManagerType, TerrierManager> classInstances = new HashMap<>();
+	
+	/**
+	 * Static block to load the Terrier Properties
+	 */
+	static {
+		try
+		{
+			if(System.getProperty("terrier.home") == null) {
+				InitialContext context = new InitialContext();
+				String terrier_home = (String) context.lookup("java:/comp/env/" + TERRIER_HOME_CONTEXT_KEY);
+				String terrier_index_path = (String) context.lookup("java:/comp/env/" + TERRIER_SEARCH_INDEX_PATH_CONTEXT_KEY);
+				String terrier_recommender_path = (String) context.lookup("java:/comp/env/" + TERRIER_RECOMMENDER_INDEX_PATH_CONTEXT_KEY);
+				
+				System.setProperty("terrier.home", terrier_home);
+				System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, terrier_index_path);
+				System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, terrier_recommender_path);
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 	
 //	/**
 //	 * Default Constructor
@@ -66,7 +94,6 @@ public class TerrierManager {
 	 * @param indexPrefix the prefix that was used at indexing. Default value is "data".
 	 */
 	private TerrierManager(String indexPath, String indexPrefix) {
-		this.setTerrierHome();
 		if(indexPrefix == null || indexPrefix.isEmpty())
 			 indexPrefix = "data";
 		//index = Index.createIndex();
@@ -75,23 +102,6 @@ public class TerrierManager {
 	}
 	
 	
-	/**
-	 * If the Terrier Home is not set, tries to look at it with the JNDI Resources
-	 */
-	private void setTerrierHome() {
-		if(System.getProperty("terrier.home") == null) {
-			try
-			{
-				InitialContext context = new InitialContext();
-				String terrier_home = (String) context.lookup("java:/comp/env/" + TERRIER_HOME_CONTEXT_KEY);
-				
-				System.setProperty("terrier.home", terrier_home);
-			}
-			catch(Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
 	
 //	/**
 //     * Returns an instance of the class

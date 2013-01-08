@@ -24,8 +24,8 @@ public class QueryManager {
 		super();
 		try
 		{
-		this.retrievalManager = new RetrievalManager(
-				TerrierManager.getInstance(TerrierManager.ManagerType.SEARCH));
+			this.retrievalManager = new RetrievalManager(
+					TerrierManager.getInstance(TerrierManager.ManagerType.SEARCH));
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

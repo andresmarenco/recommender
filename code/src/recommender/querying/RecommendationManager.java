@@ -24,11 +24,12 @@ public class RecommendationManager {
 	public RecommendationManager() {
 		super();
 
-//		System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
-//		System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
-//				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
-//		System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
-//				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
+		System.setProperty("terrier.home",
+				"/home/andres/git/recommender/code/resources/terrier-3.5");
+		System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
+				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
+		System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
+				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
 		
 		try
 		{
