@@ -142,12 +142,9 @@ public class RetrievalManager {
 	 * @throws RecommenderException
 	 */
     public ResultSet search(String query, Integer start, Integer results) throws RecommenderException {
-    	ResultSet rs = null;
-    	
+
     	try
     	{
-			Manager manager = terrierManager.getManager();
-			
 			//breaks down the query into terms, and create a multitermquery, from singletermquery instances
 			String[] searchwords = query.split(" ");
 			MultiTermQuery mtq = new MultiTermQuery();
@@ -155,25 +152,9 @@ public class RetrievalManager {
 				mtq.add(new SingleTermQuery(word));
 			}
 			
-			SearchRequest search = manager.newSearchRequest();
-			search.setQuery(mtq);
-			search.addMatchingModel("Matching", ApplicationSetup.getProperty("trec.model", "PL2"));
+			return this.search(mtq, start, results);
 			
-			if(results != null) {
-				if(start == null) {
-					start = new Integer(0); 
-				}
-				
-				search.setControl("start", String.valueOf(start));
-				search.setControl("end", String.valueOf(start + results - 1));
-			}
-			
-			manager.runPreProcessing(search);
-            manager.runMatching(search);
-            manager.runPostProcessing(search);
-            manager.runPostFilters(search);
-            
-            rs = search.getResultSet();
+    		
     	}
     	catch(Exception ex) {
     		ex.printStackTrace();
@@ -181,6 +162,59 @@ public class RetrievalManager {
     		throw new RecommenderException(RecommenderException.MSG_ERROR_TERRIER_RETRIEVAL);
     	}
     	
-    	return rs;
     }
+
+    /**
+	 * performs a search for a multiTermQuery
+	 * 
+	 * @param mtq
+	 * @param start the offset (position) of the first result
+	 * @param results the number of the returned results (size of the window)
+	 * @return the resultset
+     */
+	private ResultSet search(MultiTermQuery mtq, Integer start, Integer results) {
+		ResultSet rs = null;
+		Manager manager = terrierManager.getManager();
+		
+
+		
+		SearchRequest search = manager.newSearchRequest();
+		search.setQuery(mtq);
+		search.addMatchingModel("Matching", ApplicationSetup.getProperty("trec.model", "PL2"));
+		
+		if(results != null) {
+			if(start == null) {
+				start = new Integer(0); 
+			}
+			
+			search.setControl("start", String.valueOf(start));
+			search.setControl("end", String.valueOf(start + results - 1));
+		}
+		
+		manager.runPreProcessing(search);
+        manager.runMatching(search);
+        manager.runPostProcessing(search);
+        manager.runPostFilters(search);
+        
+        rs = search.getResultSet();
+        return rs;
+	}
+
+	/**
+	 * performs a search for a multiTermQuery
+	 * 
+	 * @param mtq
+	 * @param start the offset (position) of the first result
+	 * @param results the number of the returned results (size of the window)
+	 * @return list of stories, their size equals or is smaller than the @param results
+	 */
+	public List<IRStory> searchStories(MultiTermQuery mtq, Integer start, Integer results) {
+		try {
+			return getStoriesFromResultSet(this.search(mtq, start, results));
+		} catch (RecommenderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
