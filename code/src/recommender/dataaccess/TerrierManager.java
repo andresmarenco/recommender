@@ -1,10 +1,14 @@
 package recommender.dataaccess;
 
+import java.util.HashMap;
+
 import javax.naming.InitialContext;
 
 import org.terrier.querying.Manager;
 import org.terrier.structures.Index;
 import org.terrier.structures.MetaIndex;
+
+import recommender.utils.RecommenderException;
 
 public class TerrierManager {
 	private Index index;
@@ -19,6 +23,8 @@ public class TerrierManager {
 	/** The key to identify the path of the index used for searching */
 	public static final String TERRIER_RECOMMENDER_INDEX_PATH = "recommender_index_path";
 	
+	private static HashMap<ManagerType, TerrierManager> classInstances = new HashMap<>();
+	
 //	/**
 //	 * Default Constructor
 //	 */
@@ -28,12 +34,38 @@ public class TerrierManager {
 //		manager = new Manager(index);
 //	}
 	
+	public static TerrierManager getInstance(ManagerType key) throws RecommenderException{
+		TerrierManager manager = classInstances.get(key);
+		if (manager == null) {
+			switch (key) {
+			case SEARCH:
+				classInstances.put(
+						ManagerType.SEARCH, 
+						new TerrierManager(System.getProperty(
+								TerrierManager.TERRIER_SEARCH_INDEX_PATH),"data"));
+				manager = classInstances.get(key);
+				break;
+			case RECOMMENDER:
+				classInstances.put(
+						ManagerType.RECOMMENDER, 
+						new TerrierManager(
+								System.getProperty(
+										TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH),"data"));
+				manager = classInstances.get(key);
+				break;
+			default:
+					throw new RecommenderException("Unimplemented TerrierManager");
+			}
+		}
+		return manager;
+	}
+	
 	/**
 	 * Specialized constructor to use a different index, not the default in terrier home.
 	 * @param indexPath path on the disk
 	 * @param indexPrefix the prefix that was used at indexing. Default value is "data".
 	 */
-	public TerrierManager(String indexPath, String indexPrefix) {
+	private TerrierManager(String indexPath, String indexPrefix) {
 		this.setTerrierHome();
 		if(indexPrefix == null || indexPrefix.isEmpty())
 			 indexPrefix = "data";
@@ -106,5 +138,9 @@ public class TerrierManager {
 	 */
 	public Manager getManager() {
 		return this.manager;
+	}
+	
+	public enum ManagerType{
+		SEARCH, RECOMMENDER
 	}
 }

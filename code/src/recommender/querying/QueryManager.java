@@ -22,9 +22,14 @@ public class QueryManager {
 	
 	public QueryManager() {
 		super();
+		try
+		{
 		this.retrievalManager = new RetrievalManager(
-				new TerrierManager(
-						System.getProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH),"data"));
+				TerrierManager.getInstance(TerrierManager.ManagerType.SEARCH));
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public QueryResult search(String query, Integer offset, Integer limit) {

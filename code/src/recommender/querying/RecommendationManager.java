@@ -6,6 +6,7 @@ import java.util.List;
 import recommender.beans.IRStory;
 import recommender.dataaccess.RetrievalManager;
 import recommender.dataaccess.TerrierManager;
+import recommender.dataaccess.TerrierManager.ManagerType;
 import recommender.model.UserModelBkp;
 import recommender.model.bag.BagValue;
 import recommender.utils.RecommenderException;
@@ -23,16 +24,20 @@ public class RecommendationManager {
 	public RecommendationManager() {
 		super();
 
-		System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
-		System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
-				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
-		System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
-				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
+//		System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
+//		System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
+//				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
+//		System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
+//				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
 		
-		
-		this.retrievalManager = new RetrievalManager(
-				new TerrierManager(
-						System.getProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH),"data"));
+		try
+		{
+			this.retrievalManager = new RetrievalManager(
+				TerrierManager.getInstance(ManagerType.RECOMMENDER));
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 

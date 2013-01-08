@@ -50,8 +50,8 @@ public class Test {
 			IRUser user = userdao.login("root", "123");
 			System.out.println(user.getId());*/
 			
-//			new Test().TestRecommendations();
-			new Test().searchTest();
+			new Test().TestRecommendations();
+//			new Test().searchTest();
 			/*IRUser user = new IRUser();
 			user.setPassword("123");
 			
@@ -75,14 +75,15 @@ public class Test {
 		IRStory s = new StoryDAO().loadStory(609L, true);
 		
 		RecommendationManager rm = new RecommendationManager();
-		/*try {
-			for(IRStory st : rm.recommendStories(null, s, new LinkedList<Long>())){
-				System.out.println(st.getTitle().toString());
-			};
-		} catch (RecommenderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+//		rm.recommendStories(user_model);
+//		try {
+//			for(IRStory st : rm.recommendStories(null, s, new LinkedList<Long>())){
+//				System.out.println(st.getTitle().toString());
+//			};
+//		} catch (RecommenderException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 }
