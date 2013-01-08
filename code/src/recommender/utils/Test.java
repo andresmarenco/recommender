@@ -50,8 +50,8 @@ public class Test {
 			IRUser user = userdao.login("root", "123");
 			System.out.println(user.getId());*/
 			
-			new Test().TestRecommendations();
-//			new Test().searchTest();
+//			new Test().TestRecommendations();
+			new Test().searchTest();
 			/*IRUser user = new IRUser();
 			user.setPassword("123");
 			
