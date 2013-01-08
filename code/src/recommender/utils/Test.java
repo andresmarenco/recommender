@@ -75,14 +75,14 @@ public class Test {
 		IRStory s = new StoryDAO().loadStory(609L, true);
 		
 		RecommendationManager rm = new RecommendationManager();
-		try {
+		/*try {
 			for(IRStory st : rm.recommendStories(null, s, new LinkedList<Long>())){
 				System.out.println(st.getTitle().toString());
 			};
 		} catch (RecommenderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 	}
 }

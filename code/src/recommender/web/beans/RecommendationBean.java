@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import recommender.beans.IRStory;
 import recommender.beans.IRUser;
+import recommender.model.UserModel;
 import recommender.querying.RecommendationManager;
 import recommender.utils.RecommenderException;
 
@@ -13,67 +14,33 @@ public class RecommendationBean implements Serializable {
 	
 	private static final long serialVersionUID = 201212100440L;
 	
-	private IRUser user;
-	private IRStory current_story;
-	private Queue<Long> story_session;
+	private UserModel user_model;
 	
 	
 	/**
 	 * Default Constructor
 	 */
 	public RecommendationBean() {
-		this.user = null;
-		this.current_story = null;
-		this.story_session = null;
+		this.user_model = null;
 	}
 
 
 	/**
-	 * @return the user
+	 * @return the user_model
 	 */
-	public IRUser getUser() {
-		return user;
+	public UserModel getUser_model() {
+		return user_model;
 	}
 
 
 	/**
-	 * @param user the user to set
+	 * @param user_model the user_model to set
 	 */
-	public void setUser(IRUser user) {
-		this.user = user;
+	public void setUser_model(UserModel user_model) {
+		this.user_model = user_model;
 	}
 
 
-	/**
-	 * @return the story_session
-	 */
-	public Queue<Long> getStory_session() {
-		return story_session;
-	}
-
-
-	/**
-	 * @param story_session the story_session to set
-	 */
-	public void setStory_session(Queue<Long> story_session) {
-		this.story_session = story_session;
-	}
-
-
-	/**
-	 * @return the current_story
-	 */
-	public IRStory getCurrent_story() {
-		return current_story;
-	}
-
-
-	/**
-	 * @param current_story the current_story to set
-	 */
-	public void setCurrent_story(IRStory current_story) {
-		this.current_story = current_story;
-	}
 
 
 	/**
@@ -81,7 +48,7 @@ public class RecommendationBean implements Serializable {
 	 */
 	public List<IRStory> getRecommendations() throws RecommenderException {
 		RecommendationManager recommendationManager = new RecommendationManager();
-		return recommendationManager.recommendStories(this.user, this.current_story, this.story_session);
+		return recommendationManager.recommendStories(this.user_model);
 	}
 
 	

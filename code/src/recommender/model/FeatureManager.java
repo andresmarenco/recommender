@@ -1,12 +1,13 @@
 package recommender.model;
 
-import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
+import recommender.beans.IRKeyword;
 import recommender.model.beans.Feature;
+import recommender.model.beans.FeatureExtreme;
 import recommender.model.beans.FeatureField;
-import recommender.utils.KeyValuePair;
-import recommender.utils.LRUCacheMap;
+import recommender.model.beans.FeatureKeyword;
 
 /**
  * Keeps a cache of the Features and their IDF
@@ -15,23 +16,93 @@ import recommender.utils.LRUCacheMap;
  */
 public class FeatureManager {
 	
+	@SuppressWarnings("unused")
 	private static final int CACHE_SIZE = 30;
 	
 	/** Current instance of the class for the Singleton Pattern */
 	private static FeatureManager _ClassInstance;
 	
-	private LRUCacheMap<KeyValuePair<FeatureField, Serializable>, Feature<?>> cache;
-	private LRUCacheMap<Feature<?>, Integer> feature_size;
-	private Map<FeatureField, Integer> dimension_size;
+	private Map<FeatureField, Map<Object, Feature<?>>> cache_feature;
 	
 	
 	/**
 	 * Default Constructor
 	 */
 	private FeatureManager() {
-		cache = new LRUCacheMap<KeyValuePair<FeatureField, Serializable>, Feature<?>>(CACHE_SIZE);
-		feature_size = new LRUCacheMap<Feature<?>, Integer>(CACHE_SIZE);
+		this.initCache();
 	}
+	
+	
+	
+	/**
+	 * Initializes the cache
+	 */
+	private void initCache() {
+		this.cache_feature = new HashMap<FeatureField, Map<Object, Feature<?>>>();
+		this.cache_feature.put(FeatureField.EXTREME, new HashMap<Object, Feature<?>>());
+	}
+	
+	
+	
+	
+	/**
+	 * Creates a Feature with of the corresponding class with its value 
+	 * @param field Field
+	 * @param value Value
+	 * @return Feature
+	 */
+	public static Feature<?> createFeature(FeatureField field, Object value) {
+		Feature<?> result = null;
+		
+		switch(field) {
+		case KEYWORD: {
+			if(value instanceof IRKeyword) {
+				result = new FeatureKeyword((IRKeyword)value);
+			}
+			break;
+		}
+		
+		case EXTREME: {
+			if(value instanceof Boolean) {
+				result = new FeatureExtreme((Boolean)value);
+			}
+			break;
+		}
+		}
+		
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Tries to find a feature in the cache. If not found, creates the Feature with
+	 * the given value. If the field is cached, it is stored in the cache 
+	 * @param field Field
+	 * @param value Value
+	 * @return Feature
+	 */
+	public Feature<?> getFeature(FeatureField field, Object value) {
+		Feature<?> result = null;
+		Map<Object, Feature<?>> field_features = this.cache_feature.get(field);
+		
+		if(field_features != null) {
+			result = field_features.get(value);
+			
+			if(result == null) {
+				result = FeatureManager.createFeature(field, value);
+				if(result != null) field_features.put(value, result);
+			}
+			
+		} else {
+			result = FeatureManager.createFeature(field, value);
+		}
+		
+		return result;
+	}
+	
 	
 	
 	

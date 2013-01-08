@@ -4,7 +4,6 @@ import recommender.beans.IRKeyword;
 
 public class FeatureKeyword implements Feature<IRKeyword> {
 	
-	private float IFW;
 	private IRKeyword value;
 	private final FeatureField feature_field;
 	
@@ -15,15 +14,6 @@ public class FeatureKeyword implements Feature<IRKeyword> {
 	public FeatureKeyword(IRKeyword keyword) {
 		this.value = keyword;
 		this.feature_field = FeatureField.KEYWORD;
-		this.initIFW();
-	}
-	
-	
-	/**
-	 * Calculates the IFW of the feature and stores it into the IFW variable
-	 */
-	private void initIFW() {
-		
 	}
 
 	
@@ -34,8 +24,8 @@ public class FeatureKeyword implements Feature<IRKeyword> {
 
 
 	@Override
-	public float getIFW() {
-		return this.IFW;
+	public double getIFW() {
+		return this.value.getIFW();
 	}
 
 
@@ -82,7 +72,10 @@ public class FeatureKeyword implements Feature<IRKeyword> {
 	}
 
 
-	
+	@Override
+	public String toString() {
+		return this.value.toString();
+	}
 
 	
 }

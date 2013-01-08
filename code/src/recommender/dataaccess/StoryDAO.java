@@ -303,9 +303,9 @@ public class StoryDAO {
 			connection = _ConnectionManager.getConnection();
 			
 			if(story == null) {
-				stmt = connection.prepareStatement("select id, name from keyword");
+				stmt = connection.prepareStatement("select id, name, ifw from keyword");
 			} else {
-				stmt = connection.prepareStatement("select k.id, k.name from keyword as k inner join storykeywords as sk on k.id = sk.keywordId where sk.storyId = ?");
+				stmt = connection.prepareStatement("select k.id, k.name, k.ifw from keyword as k inner join storykeywords as sk on k.id = sk.keywordId where sk.storyId = ?");
 				stmt.setLong(1, story.getId());
 			}
 			
@@ -313,7 +313,7 @@ public class StoryDAO {
 			result = new ArrayList<IRKeyword>();
 			
 			while(rs.next()) {
-				result.add(new IRKeyword(rs.getLong("id"), rs.getString("name")));
+				result.add(new IRKeyword(rs.getLong("id"), rs.getString("name"), rs.getDouble("IFW")));
 			}
 		}
 		catch(Exception ex) {

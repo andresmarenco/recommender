@@ -8,6 +8,7 @@ public class IRKeyword implements Serializable {
 	
 	private long id;
 	private String name;
+	private double IFW;
 	
 	
 	/**
@@ -24,11 +25,13 @@ public class IRKeyword implements Serializable {
 	 * Fields Constructor
 	 * @param id Keyword's Id
 	 * @param name Keyword's Name
+	 * @param IFW Kewyword's IFW
 	 */
-	public IRKeyword(long id, String name) {
+	public IRKeyword(long id, String name, double IFW) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.IFW = IFW;
 	}
 
 	
@@ -39,6 +42,7 @@ public class IRKeyword implements Serializable {
 	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.name = null;
+		this.IFW = Double.MIN_VALUE;
 	}
 
 
@@ -75,6 +79,24 @@ public class IRKeyword implements Serializable {
 	}
 	
 	
+	/**
+	 * @return the iFW
+	 */
+	public double getIFW() {
+		return IFW;
+	}
+
+
+
+	/**
+	 * @param iFW the iFW to set
+	 */
+	public void setIFW(double iFW) {
+		IFW = iFW;
+	}
+
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

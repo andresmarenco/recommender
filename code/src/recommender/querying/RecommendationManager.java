@@ -2,14 +2,12 @@ package recommender.querying;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
-import recommender.beans.IRKeyword;
 import recommender.beans.IRStory;
-import recommender.beans.IRUser;
 import recommender.dataaccess.RetrievalManager;
-import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
+import recommender.model.UserModel;
+import recommender.model.bag.BagValue;
 import recommender.utils.RecommenderException;
 
 public class RecommendationManager {
@@ -19,9 +17,19 @@ public class RecommendationManager {
 	private static final int DEFAULT_RECOMMENDATIONS = 6;
 	
 	
-	
+	/**
+	 * Default Constructor
+	 */
 	public RecommendationManager() {
 		super();
+
+		System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
+		System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
+				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
+		System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
+				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
+		
+		
 		this.retrievalManager = new RetrievalManager(
 				new TerrierManager(
 						System.getProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH),"data"));
@@ -29,26 +37,37 @@ public class RecommendationManager {
 
 
 
-	// TODO: Make a real function for this
-	public List<IRStory> recommendStories(IRUser user, IRStory current_story, Queue<Long> story_session) throws RecommenderException {
+	/**
+	 * Recommend a set of stories based on the provides user model
+	 * @param user_model Current user model
+	 * @return List of recommended stories
+	 * @throws RecommenderException
+	 */
+	public List<IRStory> recommendStories(UserModel user_model) throws RecommenderException {
 		List<IRStory> result = new ArrayList<IRStory>();
 		
-		if((current_story != null) && (current_story.getId() != Long.MIN_VALUE)) {
-			StoryDAO storyDAO = new StoryDAO();
-			current_story.setKeywords(storyDAO.listKeywords(current_story));
+		if(user_model != null) {
+			List<BagValue> features = user_model.getOrderedFeatures();
 			
-			StringBuilder ir_query = new StringBuilder();
-			for(IRKeyword keyword : current_story.getKeywords()) {
-				ir_query.append(keyword.getName()).append(" ");
+			if(features != null) {
+				features = features.subList(0, Math.min(20, features.size()));
+				
+				// TODO: Implement this!!!
+				StringBuilder ir_query = new StringBuilder();
+				for(BagValue feature : features) {
+					ir_query.append(feature.toString()).append(" ");
+				}
+				
+				System.out.println(ir_query.toString());
+				if(!ir_query.toString().trim().isEmpty()) {
+					result = this.retrievalManager.searchStories(ir_query.toString(), 1, DEFAULT_RECOMMENDATIONS);
+				}
+				
+			} else {
+				// TODO: and if we don't have data???
+				
 			}
 			
-			System.out.println(ir_query.toString());
-			
-			result = this.retrievalManager.searchStories(ir_query.toString(), 1, DEFAULT_RECOMMENDATIONS);
-			
-			/*for(IRStory story : result) {
-				System.out.println(MessageFormat.format("[{0}] {1}", story.getCode(), story.getText()));
-			}*/
 		}
 		
 		return result;
