@@ -6,6 +6,8 @@ import java.util.List;
 import org.terrier.matching.ResultSet;
 import org.terrier.querying.Manager;
 import org.terrier.querying.SearchRequest;
+import org.terrier.querying.parser.MultiTermQuery;
+import org.terrier.querying.parser.SingleTermQuery;
 import org.terrier.structures.MetaIndex;
 import org.terrier.utility.ApplicationSetup;
 
@@ -146,7 +148,15 @@ public class RetrievalManager {
     	{
 			Manager manager = terrierManager.getManager();
 			
-			SearchRequest search = manager.newSearchRequest("queryId0", query);
+			//TODO: break down the query into terms, and create a multitermquery, from singletermquery instances
+			String[] searchwords = query.split(" ");
+			MultiTermQuery mtq = new MultiTermQuery();
+			for (String word : searchwords) {
+				mtq.add(new SingleTermQuery(word));
+			}
+			
+			SearchRequest search = manager.newSearchRequest();
+			search.setQuery(mtq);
 			search.addMatchingModel("Matching", ApplicationSetup.getProperty("trec.model", "PL2"));
 			
 			if(results != null) {
