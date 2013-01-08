@@ -11,6 +11,7 @@ import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
 import recommender.dataaccess.UserDAO;
+import recommender.model.UserModelBkp;
 import recommender.querying.QueryManager;
 import recommender.querying.RecommendationManager;
 import recommender.querying.StoryDisplayer;
@@ -75,15 +76,17 @@ public class Test {
 		IRStory s = new StoryDAO().loadStory(609L, true);
 		
 		RecommendationManager rm = new RecommendationManager();
-//		rm.recommendStories(user_model);
-//		try {
-//			for(IRStory st : rm.recommendStories(null, s, new LinkedList<Long>())){
-//				System.out.println(st.getTitle().toString());
-//			};
-//		} catch (RecommenderException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		UserModelBkp usermodel = new UserModelBkp();
 
+		//TODO: fill the usermodel with fake data here
+		try {
+			for(IRStory story : rm.recommendStories(usermodel))
+			{
+				System.out.println(story.getTitle().toString());
+			}
+		} catch (RecommenderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
