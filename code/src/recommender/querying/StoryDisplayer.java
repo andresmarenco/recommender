@@ -1,7 +1,5 @@
 package recommender.querying;
 
-import java.util.Queue;
-
 import recommender.beans.IRStory;
 import recommender.beans.IRStoryViewType;
 import recommender.beans.IRUser;

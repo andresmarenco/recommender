@@ -11,7 +11,8 @@ import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
 import recommender.dataaccess.UserDAO;
-import recommender.model.UserModelBkp;
+import recommender.model.UserModel;
+import recommender.model.bag.FeatureBag;
 import recommender.querying.QueryManager;
 import recommender.querying.RecommendationManager;
 import recommender.querying.StoryDisplayer;
@@ -76,10 +77,17 @@ public class Test {
 		IRStory s = new StoryDAO().loadStory(609L, true);
 		
 		RecommendationManager rm = new RecommendationManager();
-		UserModelBkp usermodel = new UserModelBkp();
+		UserModel usermodel = new UserModel() {
+			
+			@Override
+			protected FeatureBag getCurrentFeatureBag() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
 
 		//TODO: fill the usermodel with fake data here
-		try {
+		/*try {
 			for(IRStory story : rm.recommendStories(usermodel))
 			{
 				System.out.println(story.getTitle().toString());
@@ -87,6 +95,6 @@ public class Test {
 		} catch (RecommenderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 }

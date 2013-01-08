@@ -11,7 +11,7 @@ import recommender.beans.IRStory;
 import recommender.dataaccess.RetrievalManager;
 import recommender.dataaccess.TerrierManager;
 import recommender.dataaccess.TerrierManager.ManagerType;
-import recommender.model.UserModelBkp;
+import recommender.model.UserModel;
 import recommender.model.bag.BagValue;
 import recommender.utils.RecommenderException;
 
@@ -33,13 +33,6 @@ public class RecommendationManager {
 	public RecommendationManager() {
 		super();
 
-//		System.setProperty("terrier.home",
-//				"/home/andres/git/recommender/code/resources/terrier-3.5");
-//		System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
-//				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
-//		System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
-//				"/home/andres/git/recommender/code/resources/terrier-3.5/var/index");
-		
 		try
 		{
 			this.retrievalManager = new RetrievalManager(
@@ -58,7 +51,7 @@ public class RecommendationManager {
 	 * @return List of recommended stories
 	 * @throws RecommenderException
 	 */
-	public List<IRStory> recommendStories(UserModelBkp user_model) throws RecommenderException {
+	public List<IRStory> recommendStories(UserModel user_model) throws RecommenderException {
 		List<IRStory> result = new ArrayList<IRStory>();
 		
 		if(user_model != null) {

@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import recommender.beans.IRStory;
 import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
@@ -21,6 +23,7 @@ public abstract class UserModel {
 	 * Default Constructor
 	 */
 	public UserModel() {
+		this.current_user = null;
 		this.story_session = new LRUCacheMap<>(SESSION_SIZE);
 	}
 	
@@ -36,18 +39,57 @@ public abstract class UserModel {
 	
 	
 	
+	/**
+	 * Creates a new instance of the corresponding User Model
+	 * @param user Current User or null
+	 */
+	public static final UserModel newInstance() {
+		return UserModel.newInstance(null);
+	}
 	
+	
+	
+	
+	/**
+	 * Creates a new instance of the corresponding User Model
+	 * @param user Current User or null
+	 * @return User Model
+	 */
 	public static final UserModel newInstance(IRUser user) {
 		UserModel result = null;
-		String userModelName = new StringBuilder(UserModel.class.getPackage().getName()).append(".").append(ConfigUtil.getContextParameter(((user != null) && (user.isLogged())) ? "loggedUserModel" : "unloggedUserModel", String.class)).toString();
+		
 		try
 		{
-			result = (UserModel) Class.forName(userModelName).newInstance();
+			if((user != null) && (user.isLogged())) {
+				String userModelName = new StringBuilder(UserModel.class.getPackage().getName()).append(".").append(ConfigUtil.getContextParameter("loggedUserModel", String.class)).toString();
+				result = (UserModel) Class.forName(userModelName).getDeclaredConstructor(IRUser.class).newInstance(user);
+			} else {
+				String userModelName = new StringBuilder(UserModel.class.getPackage().getName()).append(".").append(ConfigUtil.getContextParameter("loggedUserModel", String.class)).toString();
+				result = (UserModel) Class.forName(userModelName).newInstance();
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		
 		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Finds the user model in the session. If not found, creates a new one
+	 * @param session Http Session
+	 * @param user Current User
+	 * @return User Model
+	 */
+	public static UserModel getSessionInstance(HttpSession session, IRUser user) {
+		UserModel user_model = (UserModel)session.getAttribute("user_model");
+		if(user_model == null) {
+			user_model = UserModel.newInstance(user);
+			session.setAttribute("user_model", user_model);
+		}
+		return user_model;
 	}
 	
 	

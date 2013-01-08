@@ -1,20 +1,13 @@
 package recommender.querying;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.terrier.matching.ResultSet;
 
 import recommender.beans.IRStory;
-import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.RetrievalManager;
-import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
-import recommender.utils.DBUtil;
 
 public class QueryManager {
 	
