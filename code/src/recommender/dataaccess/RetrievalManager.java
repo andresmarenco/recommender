@@ -6,6 +6,8 @@ import java.util.List;
 import org.terrier.matching.ResultSet;
 import org.terrier.querying.Manager;
 import org.terrier.querying.SearchRequest;
+import org.terrier.querying.parser.MultiTermQuery;
+import org.terrier.querying.parser.SingleTermQuery;
 import org.terrier.structures.MetaIndex;
 import org.terrier.utility.ApplicationSetup;
 
@@ -146,44 +148,21 @@ public class RetrievalManager {
     	{
 			Manager manager = terrierManager.getManager();
 			
-			SearchRequest search = manager.newSearchRequest("queryId0", query);
+			//breaks down the query into terms, and create a multitermquery, from singletermquery instances
+			String[] searchwords = query.split(" ");
+			MultiTermQuery mtq = new MultiTermQuery();
+			for (String word : searchwords) {
+				mtq.add(new SingleTermQuery(word));
+			}
+			
+			SearchRequest search = manager.newSearchRequest();
+			search.setQuery(mtq);
 			search.addMatchingModel("Matching", ApplicationSetup.getProperty("trec.model", "PL2"));
 			
 			if(results != null) {
-				if(start == null) { start = new Integer(0); }
-				
-				search.setControl("start", String.valueOf(start));
-				search.setControl("end", String.valueOf(start + results - 1));
-			}
-			
-			manager.runPreProcessing(search);
-            manager.runMatching(search);
-            manager.runPostProcessing(search);
-            manager.runPostFilters(search);
-            
-            rs = search.getResultSet();
-    	}
-    	catch(Exception ex) {
-    		ex.printStackTrace();
-    		
-    		throw new RecommenderException(RecommenderException.MSG_ERROR_TERRIER_RETRIEVAL);
-    	}
-    	
-    	return rs;
-    }
-	
-	public ResultSet superSearch(String query, Integer start, Integer results) throws RecommenderException {
-    	ResultSet rs = null;
-    	
-    	try
-    	{
-			Manager manager = terrierManager.getManager();
-			
-			SearchRequest search = manager.newSearchRequest("queryId0", query);
-			search.addMatchingModel("Matching", ApplicationSetup.getProperty("trec.model", "PL2F"));
-			
-			if(results != null) {
-				if(start == null) { start = new Integer(0); }
+				if(start == null) {
+					start = new Integer(0); 
+				}
 				
 				search.setControl("start", String.valueOf(start));
 				search.setControl("end", String.valueOf(start + results - 1));
