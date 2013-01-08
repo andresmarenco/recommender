@@ -1,11 +1,13 @@
 package recommender.model;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import recommender.beans.IRStory;
 import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
-import recommender.model.bag.BagValue;
+import recommender.dataaccess.EventDAO;
+import recommender.model.bag.FeatureBag;
 
 public class ContentUserModel extends UserModel {
 
@@ -27,27 +29,25 @@ public class ContentUserModel extends UserModel {
 
 
 	@Override
-	public List<BagValue> getUnorderedFeatures() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public List<BagValue> getOrderedFeatures() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public void viewedStory(IRStory story, IRStoryUserStatistics stats) {
-		// Ignore. Only important if cached.
-	}
-
-
-	@Override
-	public void scoredStory(IRStory story, float score) {
-		// Ignore. Only important if cached.
+	protected FeatureBag getCurrentFeatureBag() {
+		FeatureBag bag = new FeatureBag();
+		Map<IRStory, IRStoryUserStatistics> story_log;
+		
+		if(this.current_user != null) {
+			story_log = new LinkedHashMap<IRStory, IRStoryUserStatistics>();
+			EventDAO eventDAO = new EventDAO();
+			for(IRStoryUserStatistics stats : eventDAO.listUserStoryViews(this.current_user)) {
+				story_log.put(stats.getStory(), stats);
+				System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
+			}
+		} else {
+			story_log = this.story_session;
+		}
+		
+		for(IRStoryUserStatistics stats : story_session.values()) {
+			bag.addStoryData(stats);
+		}
+		
+		return bag;
 	}
 }

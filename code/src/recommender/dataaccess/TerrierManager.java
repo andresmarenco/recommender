@@ -2,12 +2,11 @@ package recommender.dataaccess;
 
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.terrier.querying.Manager;
 import org.terrier.structures.Index;
 import org.terrier.structures.MetaIndex;
 
+import recommender.utils.ConfigUtil;
 import recommender.utils.RecommenderException;
 
 public class TerrierManager {
@@ -38,10 +37,9 @@ public class TerrierManager {
 		try
 		{
 			if(System.getProperty("terrier.home") == null) {
-				InitialContext context = new InitialContext();
-				String terrier_home = (String) context.lookup("java:/comp/env/" + TERRIER_HOME_CONTEXT_KEY);
-				String terrier_index_path = (String) context.lookup("java:/comp/env/" + TERRIER_SEARCH_INDEX_PATH_CONTEXT_KEY);
-				String terrier_recommender_path = (String) context.lookup("java:/comp/env/" + TERRIER_RECOMMENDER_INDEX_PATH_CONTEXT_KEY);
+				String terrier_home = ConfigUtil.getContextParameter(TERRIER_HOME_CONTEXT_KEY, String.class);
+				String terrier_index_path = ConfigUtil.getContextParameter(TERRIER_SEARCH_INDEX_PATH_CONTEXT_KEY, String.class);
+				String terrier_recommender_path = ConfigUtil.getContextParameter(TERRIER_RECOMMENDER_INDEX_PATH_CONTEXT_KEY, String.class);
 				
 				System.setProperty("terrier.home", terrier_home);
 				System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, terrier_index_path);

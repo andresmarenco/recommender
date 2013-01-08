@@ -34,6 +34,8 @@ public class UserModelBkp {
 		//this.bag = new FeatureBag();
 		this.initializeStorySession();
 		System.out.println("EMPTY USER MODEL");
+		UserModel.newInstance(null);
+		
 	}
 	
 	
@@ -59,6 +61,8 @@ public class UserModelBkp {
 	 * @return User Model
 	 */
 	public static UserModelBkp getSessionInstance(HttpSession session, IRUser user) {
+		UserModel.newInstance(user);
+		
 		UserModelBkp user_model = (UserModelBkp)session.getAttribute("user_model");
 		if(user_model == null) {
 			user_model = new UserModelBkp(user);
