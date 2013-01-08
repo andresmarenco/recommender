@@ -61,7 +61,8 @@ public class BagValue {
 	}
 	
 	public double getTotal_weight() {
-		return (this.feature.getIFW() + this.weight) * this.interest_factor;
+		return (this.feature.getIFW() * this.frequency) + (this.weight * this.frequency);
+		//return (this.feature.getIFW() + this.weight) * this.interest_factor;
 	}
 	
 	@Override

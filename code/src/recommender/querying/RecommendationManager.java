@@ -47,7 +47,7 @@ public class RecommendationManager {
 		List<IRStory> result = new ArrayList<IRStory>();
 		
 		if(user_model != null) {
-			List<BagValue> features = user_model.getOrderedFeatures();
+			List<BagValue> features = user_model.getUnorderedFeatures();
 			
 			if(features != null) {
 				features = features.subList(0, Math.min(20, features.size()));

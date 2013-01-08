@@ -62,6 +62,17 @@ public class FeatureBag {
 	
 	
 	/**
+	 * Gets an unordered list of the features
+	 * @return List of features
+	 */
+	public List<BagValue> getUnorderedFeatures() {
+		return new ArrayList<BagValue>(this.bag.values());
+	}
+	
+	
+	
+	
+	/**
 	 * Extract all the features of a story and saves them into the bag
 	 * @param stats User Statistics of the story
 	 * @return Set with the identified features keys

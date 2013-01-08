@@ -242,6 +242,18 @@ public class EventDAO {
 	/**
 	 * Lists the stories views and scores of the user ordered descending by the last story viewed
 	 * @param user Selected User
+	 * @return List with user-s views statistics
+	 */
+	public List<IRStoryUserStatistics> listUserStoryViews(IRUser user) {
+		return this.listUserStoryViews(user, null);
+	}
+	
+	
+	
+	
+	/**
+	 * Lists the stories views and scores of the user ordered descending by the last story viewed
+	 * @param user Selected User
 	 * @param limit Limit of the list (or null for all)
 	 * @return List with user-s views statistics
 	 */

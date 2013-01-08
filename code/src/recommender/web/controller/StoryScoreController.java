@@ -78,8 +78,8 @@ public class StoryScoreController extends FormActionServlet {
         			
         			storyDAO.scoreStory(story, user, score);
         			
-        			UserModel user_model = UserModel.getSessionInstance(session, user);
-        			user_model.scoredStory(story, score);
+        			/*UserModel user_model = UserModel.getSessionInstance(session, user);
+        			user_model.scoredStory(story, score);*/
         		}
     		}
     	}

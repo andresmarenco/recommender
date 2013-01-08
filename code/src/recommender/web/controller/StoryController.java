@@ -62,8 +62,8 @@ public class StoryController extends HttpServlet {
 				StoryDAO storyDAO = new StoryDAO();
 				IRStoryUserStatistics stats = storyDAO.getStoryUserStatistics(story, user);
 				
-				UserModel user_model = UserModel.getSessionInstance(session, user);
-				user_model.viewedStory(story, stats);
+				/*UserModel user_model = UserModel.getSessionInstance(session, user);
+				user_model.viewedStory(story, stats);*/
 				
 				request.setAttribute("score", stats.getScore());
 				request.setAttribute("story", story);
