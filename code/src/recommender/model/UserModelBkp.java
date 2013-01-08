@@ -18,7 +18,7 @@ import recommender.model.bag.BagValue;
 import recommender.model.bag.FeatureBag;
 import recommender.web.controller.StoryScoreController;
 
-public class UserModel {
+public class UserModelBkp {
 	private static final int SESSION_SIZE = 6;
 	private static final float USER_LOST_INTEREST_FACTOR = 0.5F;
 	
@@ -29,7 +29,7 @@ public class UserModel {
 	/**
 	 * Default Constructor with undefined User
 	 */
-	public UserModel() {
+	public UserModelBkp() {
 		this.current_user = null;
 		//this.bag = new FeatureBag();
 		this.initializeStorySession();
@@ -43,7 +43,7 @@ public class UserModel {
 	 * Constructor with a known user. Finds the stories session on his log
 	 * @param current_user
 	 */
-	public UserModel(IRUser current_user) {
+	public UserModelBkp(IRUser current_user) {
 		this.current_user = current_user;
 		//this.bag = new FeatureBag();
 		this.initializeStorySession();
@@ -58,10 +58,10 @@ public class UserModel {
 	 * @param user Current User
 	 * @return User Model
 	 */
-	public static UserModel getSessionInstance(HttpSession session, IRUser user) {
-		UserModel user_model = (UserModel)session.getAttribute("user_model");
+	public static UserModelBkp getSessionInstance(HttpSession session, IRUser user) {
+		UserModelBkp user_model = (UserModelBkp)session.getAttribute("user_model");
 		if(user_model == null) {
-			user_model = new UserModel(user);
+			user_model = new UserModelBkp(user);
 			session.setAttribute("user_model", user_model);
 		}
 		return user_model;

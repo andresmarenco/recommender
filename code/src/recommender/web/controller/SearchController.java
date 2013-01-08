@@ -58,7 +58,7 @@ public class SearchController extends FormActionServlet {
      */
     public void onSearch() {
     	try
-    	{
+    	{ 
     		int offset = (Math.max(start - 1, 0) * results);
     		
     		QueryManager queryManager = new QueryManager();

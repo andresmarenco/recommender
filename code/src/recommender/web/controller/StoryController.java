@@ -13,7 +13,7 @@ import recommender.beans.IRStory;
 import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
 import recommender.dataaccess.StoryDAO;
-import recommender.model.UserModel;
+import recommender.model.UserModelBkp;
 import recommender.querying.StoryDisplayer;
 import recommender.utils.RecommenderException;
 import recommender.web.WebUtil;

@@ -6,7 +6,7 @@ import java.util.List;
 import recommender.beans.IRStory;
 import recommender.dataaccess.RetrievalManager;
 import recommender.dataaccess.TerrierManager;
-import recommender.model.UserModel;
+import recommender.model.UserModelBkp;
 import recommender.model.bag.BagValue;
 import recommender.utils.RecommenderException;
 
@@ -43,7 +43,7 @@ public class RecommendationManager {
 	 * @return List of recommended stories
 	 * @throws RecommenderException
 	 */
-	public List<IRStory> recommendStories(UserModel user_model) throws RecommenderException {
+	public List<IRStory> recommendStories(UserModelBkp user_model) throws RecommenderException {
 		List<IRStory> result = new ArrayList<IRStory>();
 		
 		if(user_model != null) {

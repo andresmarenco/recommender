@@ -5,7 +5,7 @@ import javax.servlet.annotation.WebServlet;
 import recommender.beans.IRStory;
 import recommender.beans.IRUser;
 import recommender.dataaccess.StoryDAO;
-import recommender.model.UserModel;
+import recommender.model.UserModelBkp;
 import recommender.web.FormActionServlet;
 import recommender.web.WebUtil;
 
