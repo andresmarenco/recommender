@@ -44,7 +44,7 @@ public class ContentUserModel extends UserModel {
 			story_log = this.story_session;
 		}
 		
-		for(IRStoryUserStatistics stats : story_session.values()) {
+		for(IRStoryUserStatistics stats : story_log.values()) {
 			bag.addStoryData(stats);
 		}
 		
