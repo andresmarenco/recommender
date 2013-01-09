@@ -17,6 +17,7 @@ import recommender.beans.IRStoryViewType;
 import recommender.beans.IRUser;
 import recommender.utils.DBUtil;
 import recommender.utils.RecommenderException;
+import recommender.web.controller.StoryScoreController;
 
 public class EventDAO {
 	
@@ -255,7 +256,7 @@ public class EventDAO {
 	 * Lists the stories views and scores of the user ordered descending by the last story viewed
 	 * @param user Selected User
 	 * @param limit Limit of the list (or null for all)
-	 * @return List with user-s views statistics
+	 * @return List with user's views statistics
 	 */
 	public List<IRStoryUserStatistics> listUserStoryViews(IRUser user, Integer limit) {
 		Connection connection = null;
@@ -289,6 +290,54 @@ public class EventDAO {
 				stats.setViews(rs.getLong("views"));
 				
 				result.add(stats);
+			}
+		}
+		catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Lists the stories views and scores that the user has liked
+	 * @param user Selected User
+	 * @param limit Limit of the list (or null for all)
+	 * @return List with user's liked stories
+	 */
+	public List<IRStory> listUserLikedStories(IRUser user, Integer limit) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<IRStory> result = null;
+		
+		try
+		{
+			result = new ArrayList<IRStory>();
+			connection = _ConnectionManager.getConnection();
+			StringBuilder query = new StringBuilder("select ss.StoryId from ir_story_user_score as ss where ss.UserId = ? and ss.score = ? order by Rand()");
+			
+			if(limit != null) {
+				stmt = connection.prepareStatement(query.append(" limit ? ").toString());
+				stmt.setInt(3, limit.intValue());
+			} else {
+				stmt = connection.prepareStatement(query.toString());
+			}
+			
+			stmt.setLong(1, user.getId());
+			stmt.setFloat(2, StoryScoreController.LIKE_SCORE);
+			rs = stmt.executeQuery();
+			StoryDAO storyDAO = new StoryDAO();
+			
+			while(rs.next()) {
+				result.add(storyDAO.loadStory(rs.getLong("StoryId"), true));
 			}
 		}
 		catch(SQLException ex) {

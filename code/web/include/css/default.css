@@ -14,6 +14,11 @@ h2 {
 }
 
 
+h4 {
+	margin: 10px 0;
+}
+
+
 div#wrapper {
 	width: 1000px;
 	margin: 0 auto;
@@ -28,7 +33,7 @@ div#header a {
 
 div#header {
 	width: 100%;
-	background-color: #455068;
+	background-color: black;
 	padding: 10px 0;
 	color: white;
 }
@@ -74,16 +79,10 @@ div#main {
 
 div#main div#story-browser {
 	width: 190px;
-	background-color: black;
-	color: white;
+	background-color: #F3EAD5;
+	color: black;
 	padding: 5px;
 	float: left;
-}
-
-
-div#main div#story-browser .browser-header {
-	font-weight: bold;
-	margin: 5px 0;
 }
 
 
@@ -93,15 +92,15 @@ div#main div#story-browser .browser-item {
 
 
 div#main div#story-browser .browser-item a {
-	color: orange;
+	color: blue;
 }
 
 
 div#main div#column-message,
 div#main div#story-recommender {
 	width: 240px;
-	background-color: #303032;
-	color: white;
+	background-color: #F3EAD5;
+	color: black;
 	padding: 5px;
 	float: right;
 }
@@ -118,7 +117,7 @@ div#main div#story-recommender .recommendation {
 
 
 div#main div#story-recommender .recommendation a {
-	color: yellow;
+	color: blue;
 }
 
 
@@ -141,6 +140,17 @@ div#main div#content {
 div#main div#content .story {
 	font-size: medium;
 	text-align: justify;
+}
+
+
+div#main div#content .storyInfo {
+	font-size: small !important;
+	text-align: left;
+	font-style: italic;
+}
+
+div#main div#content .storyInfo .title {
+	font-weight: bold;
 }
 
 
@@ -207,7 +217,7 @@ div#main div#content-login #login-form {
 
 
 div#footer {
-	background-color: #455068;
+	background-color: black;
 	clear: both;
 	text-align: right;
 	padding: 5px 0;
@@ -287,4 +297,17 @@ div#footer {
 
 .button-img {
 	cursor: pointer;
+}
+
+
+img.right {
+	float: right;
+}
+
+
+.centered {
+	text-align: center;
+    display: block;
+    margin: 0 auto;
+    padding: 0px;
 }

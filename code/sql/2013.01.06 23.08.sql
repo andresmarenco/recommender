@@ -24,3 +24,7 @@ BEGIN
 		T.id = keyword.id;
 	
 END
+
+
+
+INSERT INTO `recommender`.`ir_story_view_type` (`Name`) VALUES ('statistics');

@@ -38,7 +38,7 @@ public class ContentUserModel extends UserModel {
 			EventDAO eventDAO = new EventDAO();
 			for(IRStoryUserStatistics stats : eventDAO.listUserStoryViews(this.current_user)) {
 				story_log.put(stats.getStory(), stats);
-				System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
+				// System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
 			}
 		} else {
 			story_log = this.story_session;

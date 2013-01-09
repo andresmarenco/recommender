@@ -90,9 +90,9 @@ public class FeatureBag {
 		
 		
 		
-		for(BagValue v : this.getOrderedFeatures()) {
+		/*for(BagValue v : this.getOrderedFeatures()) {
 			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
-		}
+		}*/
 		
 		return story_features;
 	}
@@ -108,17 +108,17 @@ public class FeatureBag {
 	public void transferUserInterest(Set<BagKey<?>> story_features, float lost_interest_factor) {
 		for(Entry<BagKey<?>, BagValue> element : this.bag.entrySet()) {
 			if(story_features.contains(element.getKey())) {
-				System.out.println("+ " + element.getValue().toString());
+//				System.out.println("+ " + element.getValue().toString());
 				element.getValue().increaseInterest_factor_percentage(1 - lost_interest_factor);
 			} else {
-				System.out.println("- " + element.getValue().toString());
+//				System.out.println("- " + element.getValue().toString());
 				element.getValue().increaseInterest_factor_percentage(lost_interest_factor);
 			}
 		}
 		
-		for(BagValue v : this.getOrderedFeatures()) {
-			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
-		}
+//		for(BagValue v : this.getOrderedFeatures()) {
+//			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
+//		}
 	}
 	
 	
@@ -137,9 +137,9 @@ public class FeatureBag {
 		}
 		
 		
-		for(BagValue v : this.getOrderedFeatures()) {
-			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
-		}
+//		for(BagValue v : this.getOrderedFeatures()) {
+//			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
+//		}
 	}
 	
 	

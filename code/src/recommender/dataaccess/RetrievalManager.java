@@ -187,8 +187,8 @@ public class RetrievalManager {
 				start = new Integer(0); 
 			}
 			
-			search.setControl("start", String.valueOf(start));
-			search.setControl("end", String.valueOf(start + results - 1));
+			search.setControl("start", String.valueOf(Math.max(start, 1)));
+			search.setControl("end", String.valueOf(Math.max(start + results - 1, 1)));
 		}
 		
 		manager.runPreProcessing(search);

@@ -24,6 +24,6 @@ public class BrowserBean implements Serializable {
 	 */
 	public List<IRSubgenre> getSubgenres() {
 		StoryDAO storyDAO = new StoryDAO();
-		return storyDAO.listSubgenres(null);
+		return storyDAO.listSubgenres();
 	}
 }

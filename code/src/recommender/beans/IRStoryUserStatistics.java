@@ -15,7 +15,33 @@ public class IRStoryUserStatistics implements Serializable {
 	 * Default Constructor
 	 */
 	public IRStoryUserStatistics() {
-		
+		this.clear();
+	}
+	
+	
+	
+	
+	/**
+	 * Default Constructor
+	 * @param story Current Story
+	 */
+	public IRStoryUserStatistics(IRStory story) {
+		this.clear();
+		this.story = story;
+	}
+	
+	
+	
+	
+	/**
+	 * Default Constructor
+	 * @param story Current Story
+	 * @param views Views of the Story
+	 */
+	public IRStoryUserStatistics(IRStory story, long views) {
+		this.clear();
+		this.story = story;
+		this.views = views;
 	}
 	
 	

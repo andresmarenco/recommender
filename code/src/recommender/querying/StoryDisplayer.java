@@ -36,6 +36,8 @@ public class StoryDisplayer {
 			story = storyDAO.loadStory(story_id, false);
 			
 			if(story != null) {
+				story = storyDAO.loadAllFields(story);
+				
 				// Log the event
 				EventDAO eventDAO = new EventDAO();
 				IRStoryViewType viewType = (view_type_id != null) ? eventDAO.loadViewType(view_type_id) : null;

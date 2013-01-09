@@ -55,7 +55,7 @@ public class FeedbackUserModel extends UserModel {
 			for(IRStoryUserStatistics stats : eventDAO.listUserStoryViews(this.current_user, SESSION_SIZE)) {
 				this.story_session.put(stats.getStory(), stats);
 				this.extractFeatures(stats);
-				System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
+//				System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
 			} 
 		}
 	}
@@ -94,9 +94,9 @@ public class FeedbackUserModel extends UserModel {
 		}
 
 
-		for(IRStoryUserStatistics s : this.story_session.values()) {
-			System.out.println(s.getStory().getId() + "  /views:" + s.getViews() + " /score:" + s.getScore());
-		} 
+//		for(IRStoryUserStatistics s : this.story_session.values()) {
+//			System.out.println(s.getStory().getId() + "  /views:" + s.getViews() + " /score:" + s.getScore());
+//		} 
 	}
 
 
@@ -111,7 +111,7 @@ public class FeedbackUserModel extends UserModel {
 	public void scoredStory(IRStory story, float score) {
 		IRStoryUserStatistics session_stats = this.story_session.get(story);
 		if(session_stats != null) {
-			System.out.println("WAS " + session_stats.getScore() + " now: " + score);
+//			System.out.println("WAS " + session_stats.getScore() + " now: " + score);
 
 			if(session_stats.getScore() == StoryScoreController.NEUTRAL_SCORE) {
 				this.bag.reScoreStoryData(story, score);
@@ -128,9 +128,9 @@ public class FeedbackUserModel extends UserModel {
 			this.bag.reScoreStoryData(story, score);
 		}
 
-		for(IRStoryUserStatistics s : this.story_session.values()) {
-			System.out.println(s.getStory().getId() + "  /views:" + s.getViews() + " /score:" + s.getScore());
-		}
+//		for(IRStoryUserStatistics s : this.story_session.values()) {
+//			System.out.println(s.getStory().getId() + "  /views:" + s.getViews() + " /score:" + s.getScore());
+//		}
 	}
 	
 

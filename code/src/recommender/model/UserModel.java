@@ -94,6 +94,17 @@ public abstract class UserModel {
 	
 	
 	
+	
+	/**
+	 * Gets the current user defined by the model
+	 * @return Current user
+	 */
+	public IRUser getCurrent_user() {
+		return this.current_user;
+	}
+	
+	
+	
 
 	/**
 	 * Gets an unordered list of the features

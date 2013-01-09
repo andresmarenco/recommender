@@ -13,6 +13,17 @@ public class IRStory implements Serializable {
 	private String text;
 	private List<IRKeyword> keywords;
 	private Long views;
+	private String dateRecording;
+	private String dateCreation;
+	private boolean copyright;
+	private boolean extreme;
+	private IRLanguage language;
+	private IRFolktaleType folktaleType;
+	private IRStoryTeller storyTeller;
+	private IRScriptSource scriptSource;
+	private IRRegion region;
+	private IRSubgenre subgenre;
+	
 	
 	
 	/**
@@ -36,6 +47,16 @@ public class IRStory implements Serializable {
 		this.text = null;
 		this.keywords = null;
 		this.views = null;
+		this.dateRecording = null;
+		this.dateCreation = null;
+		this.copyright = false;
+		this.extreme = false;
+		this.language = null;
+		this.folktaleType = null;
+		this.storyTeller = null;
+		this.scriptSource = null;
+		this.region = null;
+		this.subgenre = null;
 	}
 
 
@@ -148,6 +169,206 @@ public class IRStory implements Serializable {
 	 */
 	public void setViews(Long views) {
 		this.views = views;
+	}
+	
+
+
+
+	/**
+	 * @return the dateRecording
+	 */
+	public String getDateRecording() {
+		return dateRecording;
+	}
+
+
+
+
+	/**
+	 * @param dateRecording the dateRecording to set
+	 */
+	public void setDateRecording(String dateRecording) {
+		this.dateRecording = dateRecording;
+	}
+
+
+
+
+	/**
+	 * @return the dateCreation
+	 */
+	public String getDateCreation() {
+		return dateCreation;
+	}
+
+
+
+
+	/**
+	 * @param dateCreation the dateCreation to set
+	 */
+	public void setDateCreation(String dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+
+
+
+	/**
+	 * @return the copyright
+	 */
+	public boolean isCopyright() {
+		return copyright;
+	}
+
+
+
+
+	/**
+	 * @param copyright the copyright to set
+	 */
+	public void setCopyright(boolean copyright) {
+		this.copyright = copyright;
+	}
+
+
+
+
+	/**
+	 * @return the extreme
+	 */
+	public boolean isExtreme() {
+		return extreme;
+	}
+
+
+
+
+	/**
+	 * @param extreme the extreme to set
+	 */
+	public void setExtreme(boolean extreme) {
+		this.extreme = extreme;
+	}
+
+
+
+
+	/**
+	 * @return the language
+	 */
+	public IRLanguage getLanguage() {
+		return language;
+	}
+
+
+
+
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(IRLanguage language) {
+		this.language = language;
+	}
+
+
+
+
+	/**
+	 * @return the folktaleType
+	 */
+	public IRFolktaleType getFolktaleType() {
+		return folktaleType;
+	}
+
+
+
+
+	/**
+	 * @param folktaleType the folktaleType to set
+	 */
+	public void setFolktaleType(IRFolktaleType folktaleType) {
+		this.folktaleType = folktaleType;
+	}
+
+
+
+
+	/**
+	 * @return the storyTeller
+	 */
+	public IRStoryTeller getStoryTeller() {
+		return storyTeller;
+	}
+
+
+
+
+	/**
+	 * @param storyTeller the storyTeller to set
+	 */
+	public void setStoryTeller(IRStoryTeller storyTeller) {
+		this.storyTeller = storyTeller;
+	}
+
+
+
+
+	/**
+	 * @return the scriptSource
+	 */
+	public IRScriptSource getScriptSource() {
+		return scriptSource;
+	}
+
+
+
+
+	/**
+	 * @param scriptSource the scriptSource to set
+	 */
+	public void setScriptSource(IRScriptSource scriptSource) {
+		this.scriptSource = scriptSource;
+	}
+
+
+
+
+	/**
+	 * @return the region
+	 */
+	public IRRegion getRegion() {
+		return region;
+	}
+
+
+
+
+	/**
+	 * @param region the region to set
+	 */
+	public void setRegion(IRRegion region) {
+		this.region = region;
+	}
+
+
+
+
+	/**
+	 * @return the subgenre
+	 */
+	public IRSubgenre getSubgenre() {
+		return subgenre;
+	}
+
+
+
+
+	/**
+	 * @param subgenre the subgenre to set
+	 */
+	public void setSubgenre(IRSubgenre subgenre) {
+		this.subgenre = subgenre;
 	}
 
 

@@ -7,8 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import recommender.beans.IRFolktaleType;
 import recommender.beans.IRKeyword;
+import recommender.beans.IRLanguage;
+import recommender.beans.IRRegion;
+import recommender.beans.IRScriptSource;
 import recommender.beans.IRStory;
+import recommender.beans.IRStoryTeller;
 import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRSubgenre;
 import recommender.beans.IRUser;
@@ -126,9 +131,54 @@ public class StoryDAO {
 		result.setText(rs.getString("text"));
 		result.setViews(rs.getLong("views"));
 		
-		// TODO: complete!!!
-		
 		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Completes all the fields of the story
+	 * @param story Current story
+	 * @return Completed story
+	 */
+	public IRStory loadAllFields(IRStory story) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		if(story.getId() != Long.MIN_VALUE) {
+			try
+			{
+				connection = _ConnectionManager.getConnection();
+				stmt = connection.prepareStatement("select s.*, l.name as LanguageName, ft.code as FolkTaleTypeCode, st.name as StoryTellerName, r.name as RegionName, sg.name as SubgenreName, ss.name as ScriptSourceName from story as s left outer join language as l on l.id = s.LanguageId left outer join folktaletype as ft on ft.id = s.FolkTaleTypeId left outer join storyteller as st on st.id = s.StoryTellerId left outer join region as r on r.id = s.RegionId left outer join subgenre as sg on sg.id = s.SubgenreId left outer join scriptsource as ss on ss.id = s.ScriptSourceId where s.id = ?");
+				stmt.setLong(1, story.getId());
+				
+				rs = stmt.executeQuery();
+				
+				if(rs.next()) {
+					story.setCopyright(new String("ja").equalsIgnoreCase(rs.getString("copyright")));
+					story.setDateCreation(rs.getString("dateCreation"));
+					story.setDateRecording(rs.getString("dateRecording"));
+					story.setExtreme(new String("ja").equalsIgnoreCase(rs.getString("extreme")));
+					story.setFolktaleType(new IRFolktaleType(rs.getLong("FolkTaleTypeId"), rs.getString("FolkTaleTypeCode")));
+					story.setLanguage(new IRLanguage(rs.getLong("LanguageId"), rs.getString("LanguageName")));
+					story.setRegion(new IRRegion(rs.getLong("RegionId"), rs.getString("RegionName")));
+					story.setScriptSource(new IRScriptSource(rs.getLong("ScriptSourceId"), rs.getString("ScriptSourceName")));
+					story.setStoryTeller(new IRStoryTeller(rs.getLong("StoryTellerId"), rs.getString("StoryTellerName")));
+					story.setSubgenre(new IRSubgenre(rs.getLong("SubgenreId"), rs.getString("SubgenreName")));
+				}
+			}
+			catch(Exception ex) {
+				ex.printStackTrace();
+			}
+			finally {
+				DBUtil.closeResultSet(rs);
+				DBUtil.closeStatement(stmt);
+				DBUtil.closeConnection(connection);
+			}
+		}
+		return story;
 	}
 	
 	
@@ -173,6 +223,78 @@ public class StoryDAO {
 	
 	
 	/**
+	 * Lists all the stories
+	 * @param limit Limit of results
+	 * @param offset Offset for the first result
+	 * @return List of stories
+	 */
+	public List<IRStory> listStories(Integer limit, Integer offset, StoriesOrder order) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<IRStory> result = null;
+		
+		try
+		{
+			result = new ArrayList<IRStory>();
+			connection = _ConnectionManager.getConnection();
+			StringBuilder query = new StringBuilder("select s.*, concat(substring(c.`Text`, 1, 140), '...') as text, (select count(1) from `ir_story_view_log` `sl` where (`sl`.`StoryId` = `s`.`Id`)) AS `views` from story as s inner join content as c on c.id = s.contentId ");
+			
+			switch(order) {
+			case MOST_VIEWED: {
+				query.append(" order by views desc, s.id asc ");
+				break;
+			}
+			
+			case BEST_RANKED: {
+				query.append(" order by (select sum(ss.score) from `ir_story_user_score` `ss` where (`ss`.`StoryId` = `s`.`Id`)) desc, s.id asc ");
+				break;
+			}
+			
+			case ALPHABETICALLY:
+			default: {
+				query.append(" order by s.id ");
+				break;
+			}
+			}
+			
+			if((limit == null) && (offset == null)) {
+				stmt = connection.prepareStatement(query.toString());
+			} else if(offset == null) {
+				stmt = connection.prepareStatement(query.append(" LIMIT ?").toString());
+				stmt.setLong(1, limit.intValue());
+			} else if(limit == null) {
+				stmt = connection.prepareStatement(query.append(" LIMIT ?,?").toString());
+				stmt.setLong(1, offset.intValue());
+				stmt.setLong(2, Integer.MAX_VALUE);
+			} else {
+				stmt = connection.prepareStatement(query.append(" LIMIT ?,?").toString());
+				stmt.setLong(1, offset.intValue());
+				stmt.setLong(2, limit.intValue());
+			}
+			
+			rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+				result.add(this.loadStory(rs));
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
 	 * Lists all the stories with a specific subgenre
 	 * @param subgenre Subgenre of the story
 	 * @param limit Limit of results
@@ -189,12 +311,16 @@ public class StoryDAO {
 		{
 			result = new ArrayList<IRStory>();
 			connection = _ConnectionManager.getConnection();
-			//StringBuilder query = new StringBuilder("select s.* from irv_story_stats as s where s.subgenreId = ? ");
 			StringBuilder query = new StringBuilder("select s.*, concat(substring(c.`Text`, 1, 140), '...') as text, (select count(1) from `ir_story_view_log` `sl` where (`sl`.`StoryId` = `s`.`Id`)) AS `views` from story as s inner join content as c on c.id = s.contentId where s.subgenreId = ? ");
 			
 			switch(order) {
 			case MOST_VIEWED: {
 				query.append(" order by views desc, s.id asc ");
+				break;
+			}
+			
+			case BEST_RANKED: {
+				query.append(" order by (select sum(ss.score) from `ir_story_user_score` `ss` where (`ss`.`StoryId` = `s`.`Id`)) desc, s.id asc ");
 				break;
 			}
 			
@@ -244,10 +370,9 @@ public class StoryDAO {
 	
 	/**
 	 * Lists all the subgenres of a story (or all if the story is null)
-	 * @param story Story to find the subgenres (or null)
 	 * @return List of subgenres
 	 */
-	public List<IRSubgenre> listSubgenres(IRStory story) {
+	public List<IRSubgenre> listSubgenres() {
 		Connection connection = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -256,13 +381,7 @@ public class StoryDAO {
 		try
 		{
 			connection = _ConnectionManager.getConnection();
-			
-			if(story == null) {
-				//stmt = connection.prepareStatement("select id, name from subgenre");
-				stmt = connection.prepareStatement("select s.id, s.name, (select count(1) from story as st where st.subgenreId = s.id) as total from subgenre as s order by total desc, name asc");
-			} else {
-				// TODO: Implement this!!!!!
-			}
+			stmt = connection.prepareStatement("select s.id, s.name, (select count(1) from story as st where st.subgenreId = s.id) as total from subgenre as s order by total desc, name asc");
 			
 			rs = stmt.executeQuery();
 			result = new ArrayList<IRSubgenre>();

@@ -75,6 +75,22 @@
 		  					<p>
 		  						<c:out value="${utl:escapeNewline(story.text)}" escapeXml="false" />
 		  					</p>
+		  					
+		  					<hr />
+		  					
+		  					<div class="storyInfo">
+		  						<span class="title"><fmt:message key="story.storyCode" />:</span> <span class="value"><c:out value="${story.code}" /></span><br />
+		  						<span class="title"><fmt:message key="subgenre" />:</span> <span class="value"><c:out value="${story.subgenre.name}" /></span><br />
+		  						<c:if test="${not empty story.dateRecording}"><span class="title"><fmt:message key="story.date_recording" />:</span> <span class="value"><c:out value="${story.dateRecording}" /></span><br /></c:if>
+		  						<c:if test="${not empty story.dateCreation}"><span class="title"><fmt:message key="story.date_creation" />:</span> <span class="value"><c:out value="${story.dateCreation}" /></span><br /></c:if>
+		  						<span class="title"><fmt:message key="story.copyright" />:</span> <span class="value"><fmt:message key='${story.copyright ? "yes" : "no"}' /> </span><br />
+		  						<span class="title"><fmt:message key="story.extreme" />:</span> <span class="value"><fmt:message key='${story.extreme ? "yes" : "no"}' /> </span><br />
+		  						<span class="title"><fmt:message key="story.language" />:</span> <span class="value"><c:out value="${story.language.name}" /></span><br />
+		  						<span class="title"><fmt:message key="story.folktale_type" />:</span> <span class="value"><c:out value="${story.folktaleType.code}" /></span><br />
+		  						<span class="title"><fmt:message key="story.story_teller" />:</span> <span class="value"><c:out value="${story.storyTeller.name}" /></span><br />
+		  						<span class="title"><fmt:message key="story.script_source" />:</span> <span class="value"><c:out value="${story.scriptSource.name}" /></span><br />
+		  						<span class="title"><fmt:message key="story.region" />:</span> <span class="value"><c:out value="${story.region.name}" /></span>
+		  					</div>
   						</c:when>
   						<c:otherwise>
   							<div class="error">

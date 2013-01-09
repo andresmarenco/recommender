@@ -3,9 +3,9 @@
 <jsp:useBean id="browserBean" class="recommender.web.beans.BrowserBean" scope="page" />
 
 <div id="story-browser">
-	<div class="browser-header">
-		<fmt:message key="subgenres" />
-	</div>
+	<h4>
+		<fmt:message key="subgenres" />:
+	</h4>
 	
 	<c:forEach items="${browserBean.subgenres}" var="subgenre">
 		<div class="browser-item">

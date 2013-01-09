@@ -35,10 +35,6 @@
   				</form>
   			</div>
   			
-  			<div id="story-recommender">
-  				fdsafas22 fdsajl lkd jflk afdsklf ajkf hhkafd hksaf hksaf ghkjsagf kjsa fhksda fghkdav hkjavbhka hjka bhcwe chjwk echjksd bhcjksa dbhcksa bchka bsdhvkjasd bhfkj webhjkf hwejkc bhkjsd cbhkjsda bewhkhjk vhbjsdak vhsdak cbhsadkf hewjk hjkdh vjkvsda yweu gciuc usd cjksad casjk dakj
-  			</div>
-  			
   			<div class="clear"></div>
   		</div>
   		
