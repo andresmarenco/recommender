@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
     <ResourceLink global="jdbc/Recommender" name="jdbc/Recommender" type="javax.sql.DataSource"/>
-    <Environment name="terrierHome" value="/home/andres/git/recommender/code/resources/terrier-3.5" type="java.lang.String" override="false" />
-    <Environment name="terrierSearchIndexPath" value="/home/andres/git/recommender/code/resources/terrier-3.5/var/index" type="java.lang.String" override="false" />
-    <Environment name="terrierRecommenderIndexPath" value="/home/andres/git/recommender/code/resources/terrier-3.5/var/index" type="java.lang.String" override="false" />
+    <Environment name="terrierHome" value="/usr/local/terrier" type="java.lang.String" override="false" />
+    <Environment name="terrierSearchIndexPath" value="/usr/local/terrier/var/index" type="java.lang.String" override="false" />
+    <Environment name="terrierRecommenderIndexPath" value="/usr/local/terrier/var/index" type="java.lang.String" override="false" />
     <Environment name="loggedUserModel" value="ContentUserModel" type="java.lang.String" override="false" />
     <Environment name="unloggedUserModel" value="FeedbackUserModel" type="java.lang.String" override="false" />
 </Context>

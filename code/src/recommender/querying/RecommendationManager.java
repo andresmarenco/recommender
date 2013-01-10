@@ -1,9 +1,11 @@
 package recommender.querying;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.terrier.matching.ResultSet;
 import org.terrier.querying.parser.MultiTermQuery;
 import org.terrier.querying.parser.SingleTermQuery;
 
@@ -16,7 +18,7 @@ import recommender.dataaccess.StoryDAO.StoriesOrder;
 import recommender.dataaccess.TerrierManager.ManagerType;
 import recommender.model.UserModel;
 import recommender.model.bag.BagValue;
-import recommender.utils.RecommenderException;
+import recommender.web.controller.StoryScoreController;
 
 public class RecommendationManager {
 	
@@ -53,9 +55,8 @@ public class RecommendationManager {
 	 * Recommend a set of stories based on the provides user model
 	 * @param user_model Current user model
 	 * @return List of recommended stories
-	 * @throws RecommenderException
 	 */
-	public List<IRStory> recommendStories(UserModel user_model) throws RecommenderException {
+	public List<IRStory> recommendStories(UserModel user_model) {
 		List<IRStory> result = new ArrayList<IRStory>();
 		if(user_model == null) user_model = UserModel.newInstance();
 		
@@ -89,22 +90,87 @@ public class RecommendationManager {
 			int size = Math.min(NUMBER_OF_FEATURES, features.size()/5);
 			
 			for(BagValue feature : features) {
-				if (j++ == size)
-					break;
-				SingleTermQuery stq = new SingleTermQuery();
-				stq.setTerm(feature.toString());
-				stq.setWeight(feature.getTotal_weight());
-				mtq.add(stq);
+				double weight = feature.getTotal_weight();
+				
+				if(weight > 0.0D) {
+					if (j++ == size)
+						break;
+					SingleTermQuery stq = new SingleTermQuery();
+					stq.setTerm(feature.toString());
+					stq.setWeight(weight);
+					mtq.add(stq);
+				} else {
+					System.out.println(MessageFormat.format("Ignoring negative weight {0} on feature {1}...", weight, feature.toString()));
+				}
 			}
 			
 			System.out.println("performing recommendation query: " + mtq.toString());
-			result.addAll(this.retrievalManager.searchStories(mtq, 1, DEFAULT_RECOMMENDATIONS+1));
+			ResultSet rs = this.retrievalManager.search(mtq, null, null);
+			result = this.getRecommendations(user_model, rs);
+			
+			
+			
+			/*result.addAll(this.retrievalManager.searchStories(mtq, 1, DEFAULT_RECOMMENDATIONS+1));
 			
 			if(!result.remove(user_model.getLastViewedStory())) {
 				if(result.size() == DEFAULT_RECOMMENDATIONS +1)
 					result.remove(result.size()-1);
-			}
+			}*/
 								
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Gets the list of recommended stories ignoring disliked and repeated
+	 * @param user_model Current User Model
+	 * @param rs ResultSet of Terrier Query
+	 * @return List of recommended stories
+	 */
+	private List<IRStory> getRecommendations(UserModel user_model, ResultSet rs) {
+		List<IRStory> result = new ArrayList<IRStory>();
+		
+		try
+		{
+			StoryDAO storyDAO = new StoryDAO();
+			String[] docnos = this.retrievalManager.getDocIDsFromResultSet(rs);
+			IRStory  current_story, last_viewed = user_model.getLastViewedStory();
+			String last_viewed_code = (last_viewed != null) ? last_viewed.getCode() : null;
+			int recommended_total = 0;
+			
+			for(String docid : docnos) {
+				if(docid.equalsIgnoreCase(last_viewed_code)) {
+					System.out.println("Ignoring displayed story from recommendations...");
+					continue;
+				}
+				
+				current_story = storyDAO.loadStory(docid, true); 
+				if(storyDAO.getStoryScore(current_story, user_model.getCurrent_user()) == StoryScoreController.DISLIKE_SCORE) {
+					System.out.println(MessageFormat.format("Ignoring disliked story from recommendations ({0})...", docid));
+					continue;
+				} else {
+					result.add(current_story);
+					recommended_total++;
+				}
+				
+				
+				if(recommended_total >= DEFAULT_RECOMMENDATIONS) {
+					break;
+				}
+			}
+			
+			/*result.addAll(this.retrievalManager.getStoriesFromResultSet(rs.getResultSet(1, Math.min(DEFAULT_RECOMMENDATIONS+1, result_size))));
+			if(!result.remove(user_model.getLastViewedStory())) {
+				if(result.size() == DEFAULT_RECOMMENDATIONS +1)
+					result.remove(result.size()-1);
+			}*/
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
 		}
 		
 		return result;

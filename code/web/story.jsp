@@ -81,6 +81,7 @@
 		  					<div class="storyInfo">
 		  						<span class="title"><fmt:message key="story.storyCode" />:</span> <span class="value"><c:out value="${story.code}" /></span><br />
 		  						<span class="title"><fmt:message key="subgenre" />:</span> <span class="value"><c:out value="${story.subgenre.name}" /></span><br />
+		  						<span class="title"><fmt:message key="story.keywords" />:</span> <span class="value"><c:forEach items="${story.keywords}" var="keyword" varStatus="status"><c:out value="${keyword.name}" /><c:if test="${!status.last}">, </c:if></c:forEach></span><br />
 		  						<c:if test="${not empty story.dateRecording}"><span class="title"><fmt:message key="story.date_recording" />:</span> <span class="value"><c:out value="${story.dateRecording}" /></span><br /></c:if>
 		  						<c:if test="${not empty story.dateCreation}"><span class="title"><fmt:message key="story.date_creation" />:</span> <span class="value"><c:out value="${story.dateCreation}" /></span><br /></c:if>
 		  						<span class="title"><fmt:message key="story.copyright" />:</span> <span class="value"><fmt:message key='${story.copyright ? "yes" : "no"}' /> </span><br />

@@ -150,6 +150,7 @@ public class StoryDAO {
 		if(story.getId() != Long.MIN_VALUE) {
 			try
 			{
+				story.setKeywords(this.listKeywords(story));
 				connection = _ConnectionManager.getConnection();
 				stmt = connection.prepareStatement("select s.*, l.name as LanguageName, ft.code as FolkTaleTypeCode, st.name as StoryTellerName, r.name as RegionName, sg.name as SubgenreName, ss.name as ScriptSourceName from story as s left outer join language as l on l.id = s.LanguageId left outer join folktaletype as ft on ft.id = s.FolkTaleTypeId left outer join storyteller as st on st.id = s.StoryTellerId left outer join region as r on r.id = s.RegionId left outer join subgenre as sg on sg.id = s.SubgenreId left outer join scriptsource as ss on ss.id = s.ScriptSourceId where s.id = ?");
 				stmt.setLong(1, story.getId());

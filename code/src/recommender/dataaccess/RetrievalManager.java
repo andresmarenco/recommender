@@ -66,6 +66,31 @@ public class RetrievalManager {
 	
 	
 	/**
+	 * Gets an array of the DocIDs of the ResultSet 
+	 * @param rs ResultSet with result of query
+	 * @return Array with the DocIDs
+	 * @throws RecommenderException
+	 */
+	public String[] getDocIDsFromResultSet(ResultSet rs) throws RecommenderException {
+		String[] result = null;
+		
+		try
+		{
+			MetaIndex metaIndex = terrierManager.getMetaIndex();
+			result = metaIndex.getItems("docno", rs.getDocids());
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new RecommenderException(RecommenderException.MSG_ERROR_TERRIER_CONVERSION);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
 	 * Uses Terrier to search for a query
 	 * @param query Query to search
 	 * @return List of Stories
@@ -172,7 +197,7 @@ public class RetrievalManager {
 	 * @param results the number of the returned results (size of the window)
 	 * @return the resultset
      */
-	private ResultSet search(MultiTermQuery mtq, Integer start, Integer results) {
+	public ResultSet search(MultiTermQuery mtq, Integer start, Integer results) {
 		ResultSet rs = null;
 		Manager manager = terrierManager.getManager();
 		

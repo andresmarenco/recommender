@@ -182,7 +182,6 @@ public class UserDAO {
 			
 			Timestamp now = (login) ? new Timestamp(System.currentTimeMillis()) : null;
 			connection = _ConnectionManager.getConnection();
-			DBUtil.setAutoCommit(connection, false);
 			stmt = connection.prepareStatement("insert into ir_user (username, password, name, last_login, active) values (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, user.getUsername());
 			stmt.setString(2, CryptoUtil.encyptPassword(user.getPassword()));
@@ -210,18 +209,12 @@ public class UserDAO {
 					eventDAO.logEvent(user, IREventType.EVENT_LOGIN);
 				}
 			}
-			
-			connection.commit();
 		}
 		catch(SQLException ex) {
-			DBUtil.rollback(connection);
-			
 			ex.printStackTrace();
 			throw new RecommenderException(ex.getMessage());
 		}
 		finally {
-			DBUtil.setAutoCommit(connection, true);
-			
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(stmt);
 			DBUtil.closeConnection(connection);
