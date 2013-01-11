@@ -94,7 +94,9 @@ public class RecommendationManager {
 				if(weight > 0.0D) {
 					if (j++ == size)
 						break;
-					mtq.add(this.createSingleTermQuery(feature));
+					
+					SingleTermQuery stq = this.createSingleTermQuery(feature);
+					if(stq != null) mtq.add(stq);
 				} else {
 					System.out.println(MessageFormat.format("Ignoring negative weight {0} on feature {1}...", weight, feature.toString()));
 				}
@@ -118,12 +120,18 @@ public class RecommendationManager {
 	 * @return Single Term Query
 	 */
 	private SingleTermQuery createSingleTermQuery(BagValue bagFeature) {
-		SingleTermQuery stq = new SingleTermQuery();
-		stq.setWeight(bagFeature.getTotal_weight());
+		SingleTermQuery stq = null;
+		String term = bagFeature.toString().replaceAll("\"|\\+|\\-|\\{|\\}|^|:|~", " ").trim();
 		
-		System.out.println(MessageFormat.format("{0}:{1}^{2}", bagFeature.getField().getIndexTag(), bagFeature.toString(), bagFeature.getTotal_weight()));
-		stq.setTerm(bagFeature.toString());
-		
+		if((term != null) && (!term.isEmpty())) {
+			stq = new SingleTermQuery();
+			System.out.println(MessageFormat.format("{0}:\"{1}\"^{2}", bagFeature.getField().getIndexTag(), term, bagFeature.getTotal_weight()));
+			stq.setWeight(bagFeature.getTotal_weight());
+			stq.setTerm(bagFeature.toString());
+		} else {
+			System.out.println(MessageFormat.format("Ignoring empty term for {0}...", bagFeature.getField().getIndexTag()));
+		}
+				
 		return stq;
 	}
 	
