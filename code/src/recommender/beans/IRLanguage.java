@@ -8,6 +8,7 @@ public class IRLanguage implements Serializable {
 	
 	private long id;
 	private String name;
+	private double IFW;
 	
 	/**
 	 * Default Constructor
@@ -22,11 +23,13 @@ public class IRLanguage implements Serializable {
 	 * Fields Constructor
 	 * @param id Language Id
 	 * @param name Language Name
+	 * @param IFW Language IFW
 	 */
-	public IRLanguage(long id, String name) {
+	public IRLanguage(long id, String name, double IFW) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.IFW = IFW;
 	}
 
 	
@@ -37,6 +40,7 @@ public class IRLanguage implements Serializable {
 	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.name = null;
+		this.IFW = Double.MIN_VALUE;
 	}
 
 
@@ -70,6 +74,22 @@ public class IRLanguage implements Serializable {
 	}
 	
 	
+	/**
+	 * @return the iFW
+	 */
+	public double getIFW() {
+		return IFW;
+	}
+
+
+	/**
+	 * @param iFW the iFW to set
+	 */
+	public void setIFW(double iFW) {
+		IFW = iFW;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

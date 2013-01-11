@@ -3,11 +3,22 @@ package recommender.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import recommender.beans.IRFolktaleType;
 import recommender.beans.IRKeyword;
+import recommender.beans.IRLanguage;
+import recommender.beans.IRRegion;
+import recommender.beans.IRScriptSource;
+import recommender.beans.IRStoryTeller;
+import recommender.beans.IRSubgenre;
 import recommender.model.beans.Feature;
-import recommender.model.beans.FeatureExtreme;
 import recommender.model.beans.FeatureField;
+import recommender.model.beans.FeatureFolktaleType;
 import recommender.model.beans.FeatureKeyword;
+import recommender.model.beans.FeatureLanguage;
+import recommender.model.beans.FeatureRegion;
+import recommender.model.beans.FeatureScriptSource;
+import recommender.model.beans.FeatureStoryTeller;
+import recommender.model.beans.FeatureSubgenre;
 
 /**
  * Keeps a cache of the Features and their IDF
@@ -62,11 +73,50 @@ public class FeatureManager {
 			break;
 		}
 		
-		case EXTREME: {
-			if(value instanceof Boolean) {
-				result = new FeatureExtreme((Boolean)value);
+		case FOLKTALE_TYPE: {
+			if(value instanceof IRFolktaleType) {
+				result = new FeatureFolktaleType((IRFolktaleType)value);
 			}
 			break;
+		}
+		
+		case LANGUAGE: {
+			if(value instanceof IRLanguage) {
+				result = new FeatureLanguage((IRLanguage)value);
+			}
+			break;
+		}
+		
+		case REGION: {
+			if(value instanceof IRRegion) {
+				result = new FeatureRegion((IRRegion)value);
+			}
+			break;
+		}
+		
+		case SCRIPT_SOURCE: {
+			if(value instanceof IRScriptSource) {
+				result = new FeatureScriptSource((IRScriptSource)value);
+			}
+			break;
+		}
+		
+		case STORY_TELLER: {
+			if(value instanceof IRStoryTeller) {
+				result = new FeatureStoryTeller((IRStoryTeller)value);
+			}
+			break;
+		}
+		
+		case SUBGENRE: {
+			if(value instanceof IRSubgenre) {
+				result = new FeatureSubgenre((IRSubgenre)value);
+			}
+			break;
+		}
+		
+		default: {
+			// Ignore
 		}
 		}
 		

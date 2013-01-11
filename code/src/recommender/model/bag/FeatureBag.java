@@ -10,9 +10,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import recommender.beans.IRFolktaleType;
 import recommender.beans.IRKeyword;
+import recommender.beans.IRLanguage;
+import recommender.beans.IRRegion;
+import recommender.beans.IRScriptSource;
 import recommender.beans.IRStory;
+import recommender.beans.IRStoryTeller;
 import recommender.beans.IRStoryUserStatistics;
+import recommender.beans.IRSubgenre;
 import recommender.dataaccess.StoryDAO;
 import recommender.model.FeatureManager;
 import recommender.model.beans.FeatureField;
@@ -21,7 +27,6 @@ import recommender.utils.OrderDirection;
 
 public class FeatureBag {
 	
-	private static final int BAG_DESIRED_SIZE = 50;
 	private Map<BagKey<?>, BagValue> bag;
 	
 	/**
@@ -79,22 +84,46 @@ public class FeatureBag {
 	 */
 	public Set<BagKey<?>> addStoryData(IRStoryUserStatistics stats) {
 		StoryDAO storyDAO = new StoryDAO();
-		KeyValuePair<BagKey<?>, BagValue> feature_pair;
 		Set<BagKey<?>> story_features = new HashSet<BagKey<?>>();
+		IRStory current_story = stats.getStory();
 		
-		for(IRKeyword keyword : storyDAO.listKeywords(stats.getStory())) {
-			feature_pair = this.addKeyword(keyword);
-			story_features.add(feature_pair.getKey());
-			this.refreshValues(feature_pair.getValue(), stats);
+		for(IRKeyword keyword : storyDAO.listKeywords(current_story)) {
+			this.addFeatureAndRefresh(story_features, stats, FeatureField.KEYWORD, keyword);
 		}
 		
+		this.addFeatureAndRefresh(story_features, stats, FeatureField.FOLKTALE_TYPE, current_story.getFolktaleType());
+		this.addFeatureAndRefresh(story_features, stats, FeatureField.LANGUAGE, current_story.getLanguage());
+		this.addFeatureAndRefresh(story_features, stats, FeatureField.REGION, current_story.getRegion());
+		//this.addFeatureAndRefresh(story_features, stats, FeatureField.SCRIPT_SOURCE, current_story.getScriptSource());
+		this.addFeatureAndRefresh(story_features, stats, FeatureField.STORY_TELLER, current_story.getStoryTeller());
+		this.addFeatureAndRefresh(story_features, stats, FeatureField.SUBGENRE, current_story.getSubgenre());
 		
+		
+
 		
 		/*for(BagValue v : this.getOrderedFeatures()) {
-			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
+			System.out.println(MessageFormat.format("{0}:{1}^{2}", v.getField().toString(), v.toString(), v.getTotal_weight()));
 		}*/
 		
 		return story_features;
+	}
+	
+	
+	
+	
+	/**
+	 * Adds a feature into the bag and refreshes its weight
+	 * @param story_features Set with current story features
+	 * @param stats User Statistics of the story
+	 * @param field Field of the Feature
+	 * @param value Value of the Feature
+	 */
+	private void addFeatureAndRefresh(Set<BagKey<?>> story_features, IRStoryUserStatistics stats, FeatureField field, Object value) {
+		KeyValuePair<BagKey<?>, BagValue> feature_pair = this.addFeature(field, value);
+		if(feature_pair != null) {
+			story_features.add(feature_pair.getKey());
+			this.refreshValues(feature_pair.getValue(), stats);
+		}
 	}
 	
 	
@@ -109,10 +138,10 @@ public class FeatureBag {
 		for(Entry<BagKey<?>, BagValue> element : this.bag.entrySet()) {
 			if(story_features.contains(element.getKey())) {
 //				System.out.println("+ " + element.getValue().toString());
-				element.getValue().increaseInterest_factor_percentage(1 - lost_interest_factor);
+				//element.getValue().increaseInterest_factor_percentage(1 - lost_interest_factor);
 			} else {
 //				System.out.println("- " + element.getValue().toString());
-				element.getValue().increaseInterest_factor_percentage(lost_interest_factor);
+				//element.getValue().increaseInterest_factor_percentage(lost_interest_factor);
 			}
 		}
 		
@@ -129,13 +158,26 @@ public class FeatureBag {
 	 */
 	public void reScoreStoryData(IRStory story, float score) {
 		StoryDAO storyDAO = new StoryDAO();
-		KeyValuePair<BagKey<?>, BagValue> feature_pair;
+		KeyValuePair<BagKey<?>, BagValue> feature_bag_value;
 		
 		for(IRKeyword keyword : storyDAO.listKeywords(story)) {
-			feature_pair = this.addKeyword(keyword);
-			feature_pair.getValue().increaseWeight(score);
+			feature_bag_value = this.addFeature(FeatureField.KEYWORD, keyword);
+			if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
 		}
 		
+		feature_bag_value = this.addFeature(FeatureField.FOLKTALE_TYPE, story.getFolktaleType());
+		if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
+		feature_bag_value = this.addFeature(FeatureField.LANGUAGE, story.getLanguage());
+		if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
+		feature_bag_value = this.addFeature(FeatureField.REGION, story.getRegion());
+		if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
+//		feature_bag_value = this.addFeature(FeatureField.SCRIPT_SOURCE, story.getScriptSource());
+//		if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
+		feature_bag_value = this.addFeature(FeatureField.STORY_TELLER, story.getStoryTeller());
+		if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
+		feature_bag_value = this.addFeature(FeatureField.SUBGENRE, story.getSubgenre());
+		if(feature_bag_value != null) feature_bag_value.getValue().increaseWeight(score);
+			
 		
 //		for(BagValue v : this.getOrderedFeatures()) {
 //			System.out.println(v.getFeature().toString() + "  w:" + v.getTotal_weight() + "   f:" + v.getFrequency());
@@ -157,46 +199,81 @@ public class FeatureBag {
 	
 	
 	/**
-	 * Adds a Keyword in the bag
-	 * @param keyword Keyword
-	 * @return Key-Value Pair of the Bag
-	 */
-	private KeyValuePair<BagKey<?>, BagValue> addKeyword(IRKeyword keyword) {
-		return this.addFeature(FeatureField.KEYWORD, keyword);
-	}
-	
-	
-	
-	/**
 	 * Adds a feature into the bag
 	 * @param field Field of the Feature
 	 * @param value Value of the Feature
 	 * @return Key-Value Pair of the Bag
 	 */
 	private KeyValuePair<BagKey<?>, BagValue> addFeature(FeatureField field, Object value) {
-		BagKey<?> key = null;
-		switch(field) {
-		case KEYWORD: {
-			if(value instanceof IRKeyword) {
-				key = new BagKey<IRKeyword>((IRKeyword)value, FeatureField.KEYWORD);
+		KeyValuePair<BagKey<?>, BagValue> result = null;
+		
+		if(value != null) {
+			BagKey<?> key = null;
+			
+			switch(field) {
+			case KEYWORD: {
+				if(value instanceof IRKeyword) {
+					key = new BagKey<IRKeyword>((IRKeyword)value, FeatureField.KEYWORD);
+				}
+				break;
 			}
-			break;
-		}
-		
-		case EXTREME: {
-			if(value instanceof Boolean) {
-				key = new BagKey<Boolean>((Boolean)value, FeatureField.EXTREME);
+			
+			case FOLKTALE_TYPE: {
+				if(value instanceof IRFolktaleType) {
+					key = new BagKey<IRFolktaleType>((IRFolktaleType)value, FeatureField.FOLKTALE_TYPE);
+				}
+				break;
 			}
-			break;
-		}
+			
+			case LANGUAGE: {
+				if(value instanceof IRLanguage) {
+					key = new BagKey<IRLanguage>((IRLanguage)value, FeatureField.LANGUAGE);
+				}
+				break;
+			}
+			
+			case REGION: {
+				if(value instanceof IRRegion) {
+					key = new BagKey<IRRegion>((IRRegion)value, FeatureField.REGION);
+				}
+				break;
+			}
+			
+			case SCRIPT_SOURCE: {
+				if(value instanceof IRScriptSource) {
+					key = new BagKey<IRScriptSource>((IRScriptSource)value, FeatureField.SCRIPT_SOURCE);
+				}
+				break;
+			}
+			
+			case STORY_TELLER: {
+				if(value instanceof IRStoryTeller) {
+					key = new BagKey<IRStoryTeller>((IRStoryTeller)value, FeatureField.STORY_TELLER);
+				}
+				break;
+			}
+			
+			case SUBGENRE: {
+				if(value instanceof IRSubgenre) {
+					key = new BagKey<IRSubgenre>((IRSubgenre)value, FeatureField.SUBGENRE);
+				}
+				break;
+			}
+			
+			default: {
+				// Ignore
+			}
+			}
+			
+			BagValue bagValue = this.bag.get(key);
+			if(bagValue == null) {
+				bagValue = new BagValue(FeatureManager.getInstance().getFeature(field, value));
+				this.bag.put(key, bagValue);
+			}
+			
+			result = new KeyValuePair<BagKey<?>, BagValue>(key, bagValue);
 		}
 		
-		BagValue bagValue = this.bag.get(key);
-		if(bagValue == null) {
-			bagValue = new BagValue(FeatureManager.getInstance().getFeature(field, value));
-			this.bag.put(key, bagValue);
-		}
-		
-		return new KeyValuePair<BagKey<?>, BagValue>(key, bagValue);
+		return result;
 	}
 }

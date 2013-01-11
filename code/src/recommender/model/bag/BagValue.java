@@ -9,14 +9,12 @@ public class BagValue {
 	private Feature<?> feature;
 	private int frequency;
 	private float weight;
-	private float interest_factor;
 	
 	/**
 	 * Default Constructor
 	 */
 	public BagValue(Feature<?> feature) {
 		this.feature = feature;
-		this.interest_factor = 1;
 	}
 	
 	
@@ -50,14 +48,6 @@ public class BagValue {
 	
 	public void decreaseWeight(float factor) {
 		this.weight -= factor;
-	}
-	
-	public void increaseInterest_factor_percentage(float factor) {
-		this.interest_factor *= factor;
-	}
-	
-	public void decreaseInterest_factor_percentage(float factor) {
-		this.interest_factor /= Math.max(factor, 1);
 	}
 	
 	public double getTotal_weight() {

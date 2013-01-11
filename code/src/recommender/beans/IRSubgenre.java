@@ -8,6 +8,7 @@ public class IRSubgenre implements Serializable {
 	
 	private long id;
 	private String name;
+	private double IFW;
 	private int total;
 	
 	/**
@@ -23,11 +24,13 @@ public class IRSubgenre implements Serializable {
 	 * Fields Constructor
 	 * @param id Subgenre's Id
 	 * @param name Subgenre's Name
+	 * @param IFW Subgenre's IFW
 	 */
-	public IRSubgenre(long id, String name) {
+	public IRSubgenre(long id, String name, double IFW) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.IFW = IFW;
 	}
 	
 
@@ -52,6 +55,8 @@ public class IRSubgenre implements Serializable {
 	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.name = null;
+		this.IFW = Double.MIN_VALUE;
+		this.total = 0;
 	}
 
 
@@ -63,6 +68,7 @@ public class IRSubgenre implements Serializable {
 		return id;
 	}
 
+	
 	/**
 	 * @param id the id to set
 	 */
@@ -70,6 +76,7 @@ public class IRSubgenre implements Serializable {
 		this.id = id;
 	}
 
+	
 	/**
 	 * @return the name
 	 */
@@ -77,11 +84,28 @@ public class IRSubgenre implements Serializable {
 		return name;
 	}
 
+	
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+
+	/**
+	 * @return the iFW
+	 */
+	public double getIFW() {
+		return IFW;
+	}
+
+
+	/**
+	 * @param iFW the iFW to set
+	 */
+	public void setIFW(double iFW) {
+		IFW = iFW;
 	}
 
 

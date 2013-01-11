@@ -8,6 +8,7 @@ public class IRRegion implements Serializable {
 	
 	private long id;
 	private String name;
+	private double IFW;
 	
 	/**
 	 * Default Constructor
@@ -22,11 +23,13 @@ public class IRRegion implements Serializable {
 	 * Fields Constructor
 	 * @param id Region Id
 	 * @param name Region Name
+	 * @param IFW Region IFW
 	 */
-	public IRRegion(long id, String name) {
+	public IRRegion(long id, String name, double IFW) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.IFW = IFW;
 	}
 
 	
@@ -37,6 +40,7 @@ public class IRRegion implements Serializable {
 	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.name = null;
+		this.IFW = Double.MIN_VALUE;
 	}
 
 
@@ -70,6 +74,22 @@ public class IRRegion implements Serializable {
 	}
 	
 	
+	/**
+	 * @return the iFW
+	 */
+	public double getIFW() {
+		return IFW;
+	}
+
+
+	/**
+	 * @param iFW the iFW to set
+	 */
+	public void setIFW(double iFW) {
+		IFW = iFW;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

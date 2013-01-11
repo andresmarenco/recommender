@@ -81,7 +81,6 @@ public class RecommendationManager {
 				features = most_viewed_model.getUnorderedFeatures();
 			}
 			
-			
 			Collections.shuffle(features);
 			MultiTermQuery mtq = new MultiTermQuery();
 			
@@ -95,10 +94,7 @@ public class RecommendationManager {
 				if(weight > 0.0D) {
 					if (j++ == size)
 						break;
-					SingleTermQuery stq = new SingleTermQuery();
-					stq.setTerm(feature.toString());
-					stq.setWeight(weight);
-					mtq.add(stq);
+					mtq.add(this.createSingleTermQuery(feature));
 				} else {
 					System.out.println(MessageFormat.format("Ignoring negative weight {0} on feature {1}...", weight, feature.toString()));
 				}
@@ -107,19 +103,28 @@ public class RecommendationManager {
 			System.out.println("performing recommendation query: " + mtq.toString());
 			ResultSet rs = this.retrievalManager.search(mtq, null, null);
 			result = this.getRecommendations(user_model, rs);
-			
-			
-			
-			/*result.addAll(this.retrievalManager.searchStories(mtq, 1, DEFAULT_RECOMMENDATIONS+1));
-			
-			if(!result.remove(user_model.getLastViewedStory())) {
-				if(result.size() == DEFAULT_RECOMMENDATIONS +1)
-					result.remove(result.size()-1);
-			}*/
 								
 		}
 		
 		return result;
+	}
+	
+	
+	
+	
+	/**
+	 * Creates a Single Term Query based on the Bag Feature
+	 * @param bagFeature Bag Feature
+	 * @return Single Term Query
+	 */
+	private SingleTermQuery createSingleTermQuery(BagValue bagFeature) {
+		SingleTermQuery stq = new SingleTermQuery();
+		stq.setWeight(bagFeature.getTotal_weight());
+		
+		System.out.println(MessageFormat.format("{0}:{1}^{2}", bagFeature.getField().getIndexTag(), bagFeature.toString(), bagFeature.getTotal_weight()));
+		stq.setTerm(bagFeature.toString());
+		
+		return stq;
 	}
 	
 	
@@ -162,12 +167,6 @@ public class RecommendationManager {
 					break;
 				}
 			}
-			
-			/*result.addAll(this.retrievalManager.getStoriesFromResultSet(rs.getResultSet(1, Math.min(DEFAULT_RECOMMENDATIONS+1, result_size))));
-			if(!result.remove(user_model.getLastViewedStory())) {
-				if(result.size() == DEFAULT_RECOMMENDATIONS +1)
-					result.remove(result.size()-1);
-			}*/
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();

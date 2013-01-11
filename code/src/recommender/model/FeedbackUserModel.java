@@ -8,6 +8,7 @@ import recommender.beans.IRStory;
 import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
 import recommender.dataaccess.EventDAO;
+import recommender.dataaccess.StoryDAO;
 import recommender.model.bag.BagKey;
 import recommender.model.bag.FeatureBag;
 import recommender.utils.LRUCacheMap;
@@ -52,7 +53,9 @@ public class FeedbackUserModel extends UserModel {
 
 		if(this.current_user != null) {
 			EventDAO eventDAO = new EventDAO();
+			StoryDAO storyDAO = new StoryDAO();
 			for(IRStoryUserStatistics stats : eventDAO.listUserStoryViews(this.current_user, SESSION_SIZE)) {
+				stats.setStory(storyDAO.loadAllFields(stats.getStory()));
 				this.story_session.put(stats.getStory(), stats);
 				this.extractFeatures(stats);
 //				System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());

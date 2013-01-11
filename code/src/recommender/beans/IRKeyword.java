@@ -25,7 +25,7 @@ public class IRKeyword implements Serializable {
 	 * Fields Constructor
 	 * @param id Keyword's Id
 	 * @param name Keyword's Name
-	 * @param IFW Kewyword's IFW
+	 * @param IFW Keyword's IFW
 	 */
 	public IRKeyword(long id, String name, double IFW) {
 		super();

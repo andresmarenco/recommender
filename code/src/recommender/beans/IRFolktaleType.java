@@ -8,6 +8,7 @@ public class IRFolktaleType implements Serializable {
 	
 	private long id;
 	private String code;
+	private double IFW;
 	
 	/**
 	 * Default Constructor
@@ -22,11 +23,13 @@ public class IRFolktaleType implements Serializable {
 	 * Fields Constructor
 	 * @param id Folktale Type Id
 	 * @param code Folktale Type Code
+	 * @param IFW Folktale Type IFW
 	 */
-	public IRFolktaleType(long id, String code) {
+	public IRFolktaleType(long id, String code, double IFW) {
 		super();
 		this.id = id;
 		this.code = code;
+		this.IFW = IFW;
 	}
 
 	
@@ -37,6 +40,7 @@ public class IRFolktaleType implements Serializable {
 	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.code = null;
+		this.IFW = Double.MIN_VALUE;
 	}
 
 
@@ -70,6 +74,22 @@ public class IRFolktaleType implements Serializable {
 	}
 	
 	
+	/**
+	 * @return the iFW
+	 */
+	public double getIFW() {
+		return IFW;
+	}
+
+
+	/**
+	 * @param iFW the iFW to set
+	 */
+	public void setIFW(double iFW) {
+		IFW = iFW;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

@@ -152,7 +152,7 @@ public class StoryDAO {
 			{
 				story.setKeywords(this.listKeywords(story));
 				connection = _ConnectionManager.getConnection();
-				stmt = connection.prepareStatement("select s.*, l.name as LanguageName, ft.code as FolkTaleTypeCode, st.name as StoryTellerName, r.name as RegionName, sg.name as SubgenreName, ss.name as ScriptSourceName from story as s left outer join language as l on l.id = s.LanguageId left outer join folktaletype as ft on ft.id = s.FolkTaleTypeId left outer join storyteller as st on st.id = s.StoryTellerId left outer join region as r on r.id = s.RegionId left outer join subgenre as sg on sg.id = s.SubgenreId left outer join scriptsource as ss on ss.id = s.ScriptSourceId where s.id = ?");
+				stmt = connection.prepareStatement("select s.*, l.name as LanguageName, l.ifw as LanguageIFW, ft.code as FolkTaleTypeCode, ft.ifw as FolkTaleTypeIFW, st.name as StoryTellerName, st.ifw as StoryTellerIFW, r.name as RegionName, r.ifw as RegionIFW, sg.name as SubgenreName, sg.ifw as SubgenreIFW, ss.name as ScriptSourceName, ss.ifw as ScriptSourceIFW from story as s left outer join language as l on l.id = s.LanguageId left outer join folktaletype as ft on ft.id = s.FolkTaleTypeId left outer join storyteller as st on st.id = s.StoryTellerId left outer join region as r on r.id = s.RegionId left outer join subgenre as sg on sg.id = s.SubgenreId left outer join scriptsource as ss on ss.id = s.ScriptSourceId where s.id = ?");
 				stmt.setLong(1, story.getId());
 				
 				rs = stmt.executeQuery();
@@ -162,12 +162,12 @@ public class StoryDAO {
 					story.setDateCreation(rs.getString("dateCreation"));
 					story.setDateRecording(rs.getString("dateRecording"));
 					story.setExtreme(new String("ja").equalsIgnoreCase(rs.getString("extreme")));
-					story.setFolktaleType(new IRFolktaleType(rs.getLong("FolkTaleTypeId"), rs.getString("FolkTaleTypeCode")));
-					story.setLanguage(new IRLanguage(rs.getLong("LanguageId"), rs.getString("LanguageName")));
-					story.setRegion(new IRRegion(rs.getLong("RegionId"), rs.getString("RegionName")));
-					story.setScriptSource(new IRScriptSource(rs.getLong("ScriptSourceId"), rs.getString("ScriptSourceName")));
-					story.setStoryTeller(new IRStoryTeller(rs.getLong("StoryTellerId"), rs.getString("StoryTellerName")));
-					story.setSubgenre(new IRSubgenre(rs.getLong("SubgenreId"), rs.getString("SubgenreName")));
+					story.setFolktaleType(new IRFolktaleType(rs.getLong("FolkTaleTypeId"), rs.getString("FolkTaleTypeCode"), rs.getDouble("FolkTaleTypeIFW")));
+					story.setLanguage(new IRLanguage(rs.getLong("LanguageId"), rs.getString("LanguageName"), rs.getDouble("LanguageIFW")));
+					story.setRegion(new IRRegion(rs.getLong("RegionId"), rs.getString("RegionName"), rs.getDouble("RegionIFW")));
+					story.setScriptSource(new IRScriptSource(rs.getLong("ScriptSourceId"), rs.getString("ScriptSourceName"), rs.getDouble("ScriptSourceIFW")));
+					story.setStoryTeller(new IRStoryTeller(rs.getLong("StoryTellerId"), rs.getString("StoryTellerName"), rs.getDouble("StoryTellerIFW")));
+					story.setSubgenre(new IRSubgenre(rs.getLong("SubgenreId"), rs.getString("SubgenreName"), rs.getDouble("SubgenreIFW")));
 				}
 			}
 			catch(Exception ex) {
@@ -422,9 +422,9 @@ public class StoryDAO {
 			connection = _ConnectionManager.getConnection();
 			
 			if(story == null) {
-				stmt = connection.prepareStatement("select id, name, ifw from keyword");
+				stmt = connection.prepareStatement("select id, name, ifw from keyword order by name");
 			} else {
-				stmt = connection.prepareStatement("select k.id, k.name, k.ifw from keyword as k inner join storykeywords as sk on k.id = sk.keywordId where sk.storyId = ?");
+				stmt = connection.prepareStatement("select k.id, k.name, k.ifw from keyword as k inner join storykeywords as sk on k.id = sk.keywordId where sk.storyId = ? order by k.name");
 				stmt.setLong(1, story.getId());
 			}
 			

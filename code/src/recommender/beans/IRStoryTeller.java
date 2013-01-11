@@ -8,6 +8,7 @@ public class IRStoryTeller implements Serializable {
 	
 	private long id;
 	private String name;
+	private Double IFW;
 	
 	/**
 	 * Default Constructor
@@ -22,11 +23,13 @@ public class IRStoryTeller implements Serializable {
 	 * Fields Constructor
 	 * @param id Story Teller's Id
 	 * @param name Story Teller's Name
+	 * @param IFW Story Teller's IFW
 	 */
-	public IRStoryTeller(long id, String name) {
+	public IRStoryTeller(long id, String name, double IFW) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.IFW = IFW;
 	}
 
 	
@@ -37,6 +40,7 @@ public class IRStoryTeller implements Serializable {
 	public void clear() {
 		this.id = Long.MIN_VALUE;
 		this.name = null;
+		this.IFW = Double.MIN_VALUE;
 	}
 
 
@@ -48,6 +52,7 @@ public class IRStoryTeller implements Serializable {
 		return id;
 	}
 
+	
 	/**
 	 * @param id the id to set
 	 */
@@ -55,6 +60,7 @@ public class IRStoryTeller implements Serializable {
 		this.id = id;
 	}
 
+	
 	/**
 	 * @return the name
 	 */
@@ -62,6 +68,7 @@ public class IRStoryTeller implements Serializable {
 		return name;
 	}
 
+	
 	/**
 	 * @param name the name to set
 	 */
@@ -70,6 +77,22 @@ public class IRStoryTeller implements Serializable {
 	}
 	
 	
+	/**
+	 * @return the iFW
+	 */
+	public Double getIFW() {
+		return IFW;
+	}
+
+
+	/**
+	 * @param iFW the iFW to set
+	 */
+	public void setIFW(Double iFW) {
+		IFW = iFW;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

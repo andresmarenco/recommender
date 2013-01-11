@@ -7,6 +7,7 @@ import recommender.beans.IRStory;
 import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
 import recommender.dataaccess.EventDAO;
+import recommender.dataaccess.StoryDAO;
 import recommender.model.bag.FeatureBag;
 
 public class ContentUserModel extends UserModel {
@@ -36,7 +37,9 @@ public class ContentUserModel extends UserModel {
 		if(this.current_user != null) {
 			story_log = new LinkedHashMap<IRStory, IRStoryUserStatistics>();
 			EventDAO eventDAO = new EventDAO();
+			StoryDAO storyDAO = new StoryDAO();
 			for(IRStoryUserStatistics stats : eventDAO.listUserStoryViews(this.current_user)) {
+				stats.setStory(storyDAO.loadAllFields(stats.getStory()));
 				story_log.put(stats.getStory(), stats);
 				// System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
 			}
