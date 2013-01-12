@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.terrier.matching.ResultSet;
+import org.terrier.querying.parser.FieldQuery;
 import org.terrier.querying.parser.MultiTermQuery;
 import org.terrier.querying.parser.SingleTermQuery;
 
@@ -29,7 +30,7 @@ public class RecommendationManager {
 	/**
 	 * Maximum number of features in a query performed when a recommendation is needed.
 	 */
-	private static final int NUMBER_OF_FEATURES = 50;
+	private static final int NUMBER_OF_FEATURES = 20;
 	
 	
 	/**
@@ -52,7 +53,7 @@ public class RecommendationManager {
 
 
 	/**
-	 * Recommend a set of stories based on the provides user model
+	 * Recommend a set of stories based on the provided user model
 	 * @param user_model Current user model
 	 * @return List of recommended stories
 	 */
@@ -86,17 +87,22 @@ public class RecommendationManager {
 			
 			
 			int j = 0;
-			int size = Math.min(NUMBER_OF_FEATURES, features.size()/5);
+//			int size = Math.min(NUMBER_OF_FEATURES, features.size()/5);
 			
 			for(BagValue feature : features) {
 				double weight = feature.getTotal_weight();
 				
 				if(weight > 0.0D) {
-					if (j++ == size)
-						break;
+					FieldQuery fq = new FieldQuery();
+					fq.setField(feature.getField().getIndexTag().toLowerCase());
 					
 					SingleTermQuery stq = this.createSingleTermQuery(feature);
-					if(stq != null) mtq.add(stq);
+					if(stq == null)
+						continue;
+					fq.setChild(stq);
+					mtq.add(fq);
+					if(j++ == NUMBER_OF_FEATURES)
+						break;
 				} else {
 					System.out.println(MessageFormat.format("Ignoring negative weight {0} on feature {1}...", weight, feature.toString()));
 				}

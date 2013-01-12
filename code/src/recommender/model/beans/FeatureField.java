@@ -2,11 +2,11 @@ package recommender.model.beans;
 
 public enum FeatureField {
 	KEYWORD("trefwoorden"),
-	FOLKTALE_TYPE("volksverhaal_type"),
+	FOLKTALE_TYPE("volksverhaaltype"),
 	LANGUAGE("taal"),
 	REGION("regio"),
 	SCRIPT_SOURCE("schriftbron"),
-	STORY_TELLER("storyteller"),
+	STORY_TELLER("verteller"),
 	SUBGENRE("subgenre"),
 	EXTREME("extreem");
 	

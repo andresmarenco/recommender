@@ -41,9 +41,9 @@ public class Test {
 //			System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
 			System.setProperty("terrier.home", "C:\\Users\\feroo\\workspace\\my_terrier");
 			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
-					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index");
+					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_search");
 			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
-					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index");
+					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_recommender");
 			
 //			System.setProperty("terrier.home", "C:\\cygwin\\home\\feroo\\IR\\terrier-3.5");
 //			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
@@ -53,7 +53,7 @@ public class Test {
 			
 			IRUser user = userdao.login("root", "123");
 			System.out.println(user.getId());*/
-			
+
 			new Test().TestRecommendations();
 //			new Test().searchTest();
 			/*IRUser user = new IRUser();
@@ -71,7 +71,7 @@ public class Test {
 		QueryManager.QueryResult res = qm.search("druten", 1, 100);
 		System.out.println("Number of result are: " + res.getStories().size());
 		for(IRStory s : res.getStories()){
-			System.out.println(s.getTitle().toString());
+			System.out.println(s.getCode().toString());
 		}
 	}
 	
@@ -84,7 +84,7 @@ public class Test {
 			UserModel usermodel = new ContentUserModel(user);
 			for(IRStory story : rm.recommendStories(usermodel))
 			{
-				System.out.println(story.getTitle().toString());
+				System.out.println(story.getCode().toString());
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
