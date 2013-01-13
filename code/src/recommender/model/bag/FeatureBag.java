@@ -27,13 +27,13 @@ import recommender.utils.OrderDirection;
 
 public class FeatureBag {
 	
-	private Map<BagKey<?>, BagValue> bag;
+	private Map<BagKey<?>, ModelBagValue> bag;
 	
 	/**
 	 * Default Constructor
 	 */
 	public FeatureBag() {
-		this.bag = new LinkedHashMap<BagKey<?>, BagValue>();
+		this.bag = new LinkedHashMap<BagKey<?>, ModelBagValue>();
 	}
 	
 	
@@ -94,16 +94,8 @@ public class FeatureBag {
 		this.addFeatureAndRefresh(story_features, stats, FeatureField.FOLKTALE_TYPE, current_story.getFolktaleType());
 		this.addFeatureAndRefresh(story_features, stats, FeatureField.LANGUAGE, current_story.getLanguage());
 		this.addFeatureAndRefresh(story_features, stats, FeatureField.REGION, current_story.getRegion());
-		//this.addFeatureAndRefresh(story_features, stats, FeatureField.SCRIPT_SOURCE, current_story.getScriptSource());
 		this.addFeatureAndRefresh(story_features, stats, FeatureField.STORY_TELLER, current_story.getStoryTeller());
 		this.addFeatureAndRefresh(story_features, stats, FeatureField.SUBGENRE, current_story.getSubgenre());
-		
-		
-
-		
-		/*for(BagValue v : this.getOrderedFeatures()) {
-			System.out.println(MessageFormat.format("{0}:{1}^{2}", v.getField().toString(), v.toString(), v.getTotal_weight()));
-		}*/
 		
 		return story_features;
 	}
@@ -119,7 +111,7 @@ public class FeatureBag {
 	 * @param value Value of the Feature
 	 */
 	private void addFeatureAndRefresh(Set<BagKey<?>> story_features, IRStoryUserStatistics stats, FeatureField field, Object value) {
-		KeyValuePair<BagKey<?>, BagValue> feature_pair = this.addFeature(field, value);
+		KeyValuePair<BagKey<?>, ModelBagValue> feature_pair = this.addFeature(field, value);
 		if(feature_pair != null) {
 			story_features.add(feature_pair.getKey());
 			this.refreshValues(feature_pair.getValue(), stats);
@@ -135,13 +127,15 @@ public class FeatureBag {
 	 * @param lost_interest_factor Value between ]0, 1[ that indicates the lost of interest on the previous values
 	 */
 	public void transferUserInterest(Set<BagKey<?>> story_features, float lost_interest_factor) {
-		for(Entry<BagKey<?>, BagValue> element : this.bag.entrySet()) {
+		for(Entry<BagKey<?>, ModelBagValue> element : this.bag.entrySet()) {
 			if(story_features.contains(element.getKey())) {
-//				System.out.println("+ " + element.getValue().toString());
-				//element.getValue().increaseInterest_factor_percentage(1 - lost_interest_factor);
+//				System.out.print("+ " + element.getValue().toString());
+				element.getValue().increaseInterestFactorBy(1 - lost_interest_factor);
+//				System.out.println(" " + element.getValue().getInterestFactor());
 			} else {
-//				System.out.println("- " + element.getValue().toString());
-				//element.getValue().increaseInterest_factor_percentage(lost_interest_factor);
+//				System.out.print("- " + element.getValue().toString());
+				element.getValue().decreaseInterestFactorBy(lost_interest_factor);
+//				System.out.println(" " + element.getValue().getInterestFactor());
 			}
 		}
 		
@@ -158,7 +152,7 @@ public class FeatureBag {
 	 */
 	public void reScoreStoryData(IRStory story, float score) {
 		StoryDAO storyDAO = new StoryDAO();
-		KeyValuePair<BagKey<?>, BagValue> feature_bag_value;
+		KeyValuePair<BagKey<?>, ModelBagValue> feature_bag_value;
 		
 		for(IRKeyword keyword : storyDAO.listKeywords(story)) {
 			feature_bag_value = this.addFeature(FeatureField.KEYWORD, keyword);
@@ -191,7 +185,7 @@ public class FeatureBag {
 	 * @param value Value of the Bag
 	 * @param stats User Statistics of the story
 	 */
-	private void refreshValues(BagValue value, IRStoryUserStatistics stats) {
+	private void refreshValues(ModelBagValue value, IRStoryUserStatistics stats) {
 		value.increaseFrequency();
 		value.increaseWeight(stats.getScore());
 	}
@@ -204,8 +198,8 @@ public class FeatureBag {
 	 * @param value Value of the Feature
 	 * @return Key-Value Pair of the Bag
 	 */
-	private KeyValuePair<BagKey<?>, BagValue> addFeature(FeatureField field, Object value) {
-		KeyValuePair<BagKey<?>, BagValue> result = null;
+	private KeyValuePair<BagKey<?>, ModelBagValue> addFeature(FeatureField field, Object value) {
+		KeyValuePair<BagKey<?>, ModelBagValue> result = null;
 		
 		if(value != null) {
 			BagKey<?> key = null;
@@ -265,13 +259,18 @@ public class FeatureBag {
 			}
 			}
 			
-			BagValue bagValue = this.bag.get(key);
+			
+			ModelBagValue bagValue = this.bag.get(key);
 			if(bagValue == null) {
-				bagValue = new BagValue(FeatureManager.getInstance().getFeature(field, value));
-				this.bag.put(key, bagValue);
+				bagValue = new ModelBagValue(FeatureManager.getInstance().getFeature(field, value));
+				if(!bagValue.toString().trim().isEmpty()) {
+					this.bag.put(key, bagValue);
+				}
 			}
 			
-			result = new KeyValuePair<BagKey<?>, BagValue>(key, bagValue);
+			if(bagValue != null) {
+				result = new KeyValuePair<BagKey<?>, ModelBagValue>(key, bagValue);
+			}
 		}
 		
 		return result;

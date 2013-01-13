@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-    <ResourceLink global="jdbc/Recommender" name="jdbc/Recommender" type="javax.sql.DataSource"/>
+	<Resource driverClassName="com.mysql.jdbc.Driver" factory="org.apache.tomcat.jdbc.pool.DataSourceFactory" initialSize="10" maxActive="100" maxIdle="50" minIdle="10" name="jdbc/Recommender" password="123" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/recommender?characterEncoding=utf8" username="root" autoReconnect="true" testOnBorrow="true" validationQuery="/* ping */SELECT 1"  />
+	
     <Environment name="terrierHome" value="/usr/local/terrier" type="java.lang.String" override="false" />
     <Environment name="terrierSearchIndexPath" value="/usr/local/terrier/var/index" type="java.lang.String" override="false" />
-    <Environment name="terrierRecommenderIndexPath" value="/usr/local/terrier/var/index" type="java.lang.String" override="false" />
+    <Environment name="terrierRecommenderIndexPath" value="/usr/local/terrier/var/index_recommender" type="java.lang.String" override="false" />
     <Environment name="loggedUserModel" value="ContentUserModel" type="java.lang.String" override="false" />
-    <Environment name="unloggedUserModel" value="FeedbackUserModel" type="java.lang.String" override="false" />
+    <Environment name="unloggedUserModel" value="CachedFeedbackUserModel" type="java.lang.String" override="false" />
 </Context>

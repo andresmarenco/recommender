@@ -5,16 +5,18 @@ import java.util.Comparator;
 import recommender.model.beans.Feature;
 import recommender.model.beans.FeatureField;
 
-public class BagValue {
-	private Feature<?> feature;
-	private int frequency;
-	private float weight;
+public abstract class BagValue {
+	protected Feature<?> feature;
+	protected int frequency;
+	protected double weight;
+	protected float interest_factor;
 	
 	/**
 	 * Default Constructor
 	 */
 	public BagValue(Feature<?> feature) {
 		this.feature = feature;
+		this.interest_factor = 1;
 	}
 	
 	
@@ -22,38 +24,19 @@ public class BagValue {
 		return this.feature;
 	}
 	
-	
 	public FeatureField getField() {
 		return this.feature.getFeatureField();
-	}
-	
-	
-	public void increaseFrequency() {
-		this.frequency++;
-	}
-	
-	public void decreaseFrequency() {
-		if(--this.frequency < 0) {
-			this.frequency = 0;
-		}
 	}
 	
 	public int getFrequency() {
 		return this.frequency;
 	}
 	
-	public void increaseWeight(float factor) {
-		this.weight += factor;
+	public float getInterestFactor() {
+		return this.interest_factor;
 	}
 	
-	public void decreaseWeight(float factor) {
-		this.weight -= factor;
-	}
-	
-	public double getTotal_weight() {
-		return (this.feature.getIFW() * this.frequency) + (this.weight * this.frequency);
-		//return (this.feature.getIFW() + this.weight) * this.interest_factor;
-	}
+	public abstract double getTotal_weight();
 	
 	@Override
 	public String toString() {

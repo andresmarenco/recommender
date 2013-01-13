@@ -9,10 +9,12 @@ import recommender.beans.IRStory;
 import recommender.beans.IRSubgenre;
 import recommender.beans.IRUser;
 import recommender.dataaccess.ConnectionManager;
+import recommender.dataaccess.EventDAO;
 import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
 import recommender.dataaccess.UserDAO;
 import recommender.model.ContentUserModel;
+import recommender.model.FeedbackUserModel;
 import recommender.model.UserModel;
 import recommender.model.bag.FeatureBag;
 import recommender.querying.QueryManager;
@@ -25,10 +27,10 @@ public class Test {
 	public static void main(String[] args) {
 		try
 		{
-			System.setProperty(ConnectionManager.URL_KEY, "jdbc:mysql://localhost/meertens");
+			System.setProperty(ConnectionManager.URL_KEY, "jdbc:mysql://localhost/recommender_server");
 			System.setProperty(ConnectionManager.DRIVERNAME_KEY, "com.mysql.jdbc.Driver");
 			System.setProperty(ConnectionManager.USER_KEY, "root");
-			System.setProperty(ConnectionManager.PASSWORD_KEY, "password");
+			System.setProperty(ConnectionManager.PASSWORD_KEY, "123");
 			System.setProperty(ConnectionManager.CONNECTION_SOURCE_KEY, 
 					ConnectionManager.ConnectionSource.DIRECT.toString());
 			
@@ -38,12 +40,15 @@ public class Test {
 //			
 //			StoryViewTypeBean sv = new StoryViewTypeBean();
 			
-//			System.setProperty("terrier.home", "/home/andres/git/recommender/code/resources/terrier-3.5");
-			System.setProperty("terrier.home", "C:\\Users\\feroo\\workspace\\my_terrier");
-			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
-					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_search");
-			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
-					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_recommender");
+			System.setProperty("terrier.home", "/usr/local/terrier");
+			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, "/usr/local/terrier/var/index");
+			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, "/usr/local/terrier/var/index_recommender");
+			
+//			System.setProperty("terrier.home", "C:\\Users\\feroo\\workspace\\my_terrier");
+//			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
+//					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_search");
+//			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
+//					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_recommender");
 			
 //			System.setProperty("terrier.home", "C:\\cygwin\\home\\feroo\\IR\\terrier-3.5");
 //			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
@@ -54,7 +59,23 @@ public class Test {
 			IRUser user = userdao.login("root", "123");
 			System.out.println(user.getId());*/
 
-			new Test().TestRecommendations();
+			
+			EventDAO eventDAO = new EventDAO();
+			UserDAO userDAO = new UserDAO();
+			IRUser user = userDAO.loadUser(1L);
+			
+			long time = System.currentTimeMillis();
+			UserModel user_model = new FeedbackUserModel(user);
+			RecommendationManager rm = new RecommendationManager();
+			
+			for(IRStory story : rm.recommendStories(user_model))
+			{
+				System.out.println(story.getCode().toString() + "  " + eventDAO.isStoryViewed(user, story));
+			}
+			
+			System.out.println(System.currentTimeMillis() - time);
+			
+			//new Test().TestRecommendations();
 //			new Test().searchTest();
 			/*IRUser user = new IRUser();
 			user.setPassword("123");

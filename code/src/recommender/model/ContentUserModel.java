@@ -1,6 +1,8 @@
 package recommender.model;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import recommender.beans.IRStory;
@@ -8,49 +10,77 @@ import recommender.beans.IRStoryUserStatistics;
 import recommender.beans.IRUser;
 import recommender.dataaccess.EventDAO;
 import recommender.dataaccess.StoryDAO;
+import recommender.model.bag.BagValue;
 import recommender.model.bag.FeatureBag;
 
 public class ContentUserModel extends UserModel {
+	
+	private List<IRStoryUserStatistics> userStoryViews;
 
 	/**
 	 * Default Constructor
 	 */
 	public ContentUserModel() {
 		super();
+		this.userStoryViews = null;
 	}
 	
 	
 	/**
 	 * Constructor with a known user
-	 * @param current_user
+	 * @param currentUser
 	 */
-	public ContentUserModel(IRUser current_user) {
-		super(current_user);
+	public ContentUserModel(IRUser currentUser) {
+		super(currentUser);
+		this.userStoryViews = null;
+	}
+	
+	
+	/**
+	 * Constructor with a defined user log
+	 * @param currentUser
+	 * @param userStoryViews
+	 */
+	public ContentUserModel(IRUser currentUser, List<IRStoryUserStatistics> userStoryViews) {
+		super(currentUser);
+		this.userStoryViews = userStoryViews;
 	}
 
 
 	@Override
 	protected FeatureBag getCurrentFeatureBag() {
 		FeatureBag bag = new FeatureBag();
-		Map<IRStory, IRStoryUserStatistics> story_log;
+		Map<IRStory, IRStoryUserStatistics> storyLog;
 		
-		if(this.current_user != null) {
-			story_log = new LinkedHashMap<IRStory, IRStoryUserStatistics>();
-			EventDAO eventDAO = new EventDAO();
+		if(this.currentUser != null) {
+			storyLog = new LinkedHashMap<IRStory, IRStoryUserStatistics>();
 			StoryDAO storyDAO = new StoryDAO();
-			for(IRStoryUserStatistics stats : eventDAO.listUserStoryViews(this.current_user)) {
+			for(IRStoryUserStatistics stats : this.listUserStoryViews()) {
 				stats.setStory(storyDAO.loadAllFields(stats.getStory()));
-				story_log.put(stats.getStory(), stats);
-				// System.out.println(stats.getStory().getId() + "  /views:" + stats.getViews() + " /score:" + stats.getScore());
+				storyLog.put(stats.getStory(), stats);
 			}
 		} else {
-			story_log = this.story_session;
+			storyLog = this.storySession;
 		}
 		
-		for(IRStoryUserStatistics stats : story_log.values()) {
+		for(IRStoryUserStatistics stats : storyLog.values()) {
 			bag.addStoryData(stats);
 		}
 		
 		return bag;
+	}
+
+
+	@Override
+	public List<BagValue> getModelFeatures() {
+		List<BagValue> features = this.getCurrentFeatureBag().getUnorderedFeatures();
+		Collections.shuffle(features);
+		return features;
+	}
+
+
+	@Override
+	protected List<IRStoryUserStatistics> listUserStoryViews() {
+		return (userStoryViews != null) ? userStoryViews : new EventDAO().listUserStoryViews(this.currentUser);
 	}
 }

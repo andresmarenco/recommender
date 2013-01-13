@@ -2,7 +2,6 @@ package recommender.querying;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.terrier.matching.ResultSet;
@@ -11,12 +10,11 @@ import org.terrier.querying.parser.MultiTermQuery;
 import org.terrier.querying.parser.SingleTermQuery;
 
 import recommender.beans.IRStory;
-import recommender.beans.IRStoryUserStatistics;
 import recommender.dataaccess.RetrievalManager;
 import recommender.dataaccess.StoryDAO;
 import recommender.dataaccess.TerrierManager;
-import recommender.dataaccess.StoryDAO.StoriesOrder;
 import recommender.dataaccess.TerrierManager.ManagerType;
+import recommender.model.CachedFeedbackUserModel;
 import recommender.model.UserModel;
 import recommender.model.bag.BagValue;
 import recommender.web.controller.StoryScoreController;
@@ -25,7 +23,7 @@ public class RecommendationManager {
 	
 	RetrievalManager retrievalManager;
 
-	private static final int DEFAULT_RECOMMENDATIONS = 6;
+	private static final int DEFAULT_RECOMMENDATIONS = 20;
 	
 	/**
 	 * Maximum number of features in a query performed when a recommendation is needed.
@@ -54,37 +52,25 @@ public class RecommendationManager {
 
 	/**
 	 * Recommend a set of stories based on the provided user model
-	 * @param user_model Current user model
+	 * @param userModel Current user model
 	 * @return List of recommended stories
 	 */
-	public List<IRStory> recommendStories(UserModel user_model) {
+	public List<IRStory> recommendStories(UserModel userModel) {
 		List<IRStory> result = new ArrayList<IRStory>();
-		if(user_model == null) user_model = UserModel.newInstance();
+		if(userModel == null) userModel = UserModel.newInstance();
 		
-		if(user_model != null) {
-			List<BagValue> features = user_model.getUnorderedFeatures();
+		if(userModel != null) {
+			List<BagValue> features = userModel.getModelFeatures();
 			
 			// If there are no features, use the features from the most viewed and best ranked stories
 			if((features == null) || (features.isEmpty())) {
 				System.out.println("NO FEATURES!");
 				
-				StoryDAO storyDAO = new StoryDAO();
-				UserModel most_viewed_model = UserModel.newInstance();
-				
-				for(IRStory story : storyDAO.listStories(DEFAULT_RECOMMENDATIONS/2, 0, StoriesOrder.MOST_VIEWED)) {
-					most_viewed_model.viewedStory(story, new IRStoryUserStatistics(story, story.getViews()));
-				}
-				
-				for(IRStory story : storyDAO.listStories(DEFAULT_RECOMMENDATIONS/2, 0, StoriesOrder.BEST_RANKED)) {
-					most_viewed_model.viewedStory(story, new IRStoryUserStatistics(story, story.getViews()));
-				}
-				
-				features = most_viewed_model.getUnorderedFeatures();
+				UserModel most_viewed_model = new CachedFeedbackUserModel();
+				features = most_viewed_model.getModelFeatures();
 			}
 			
-			Collections.shuffle(features);
 			MultiTermQuery mtq = new MultiTermQuery();
-			
 			
 			int j = 0;
 //			int size = Math.min(NUMBER_OF_FEATURES, features.size()/5);
@@ -108,9 +94,15 @@ public class RecommendationManager {
 				}
 			}
 			
+//			FieldQuery fq = new FieldQuery();
+//			fq.setField("TAAL");
+//			SingleTermQuery stq = new SingleTermQuery("standaardnederlands");
+//			fq.setChild(stq);
+//			mtq.add(fq);
+			
 			System.out.println("performing recommendation query: " + mtq.toString());
 			ResultSet rs = this.retrievalManager.search(mtq, null, null);
-			result = this.getRecommendations(user_model, rs);
+			result = this.getRecommendations(userModel, rs);
 								
 		}
 		
@@ -131,7 +123,7 @@ public class RecommendationManager {
 		
 		if((term != null) && (!term.isEmpty())) {
 			stq = new SingleTermQuery();
-			System.out.println(MessageFormat.format("{0}:\"{1}\"^{2}", bagFeature.getField().getIndexTag(), term, bagFeature.getTotal_weight()));
+//			System.out.println(MessageFormat.format("{0}:\"{1}\"^{2}", bagFeature.getField().getIndexTag(), term, bagFeature.getTotal_weight()));
 			stq.setWeight(bagFeature.getTotal_weight());
 			stq.setTerm(bagFeature.toString());
 		} else {
@@ -168,7 +160,7 @@ public class RecommendationManager {
 				}
 				
 				current_story = storyDAO.loadStory(docid, true); 
-				if(storyDAO.getStoryScore(current_story, user_model.getCurrent_user()) == StoryScoreController.DISLIKE_SCORE) {
+				if(storyDAO.getStoryScore(current_story, user_model.getCurrentUser()) == StoryScoreController.DISLIKE_SCORE) {
 					System.out.println(MessageFormat.format("Ignoring disliked story from recommendations ({0})...", docid));
 					continue;
 				} else {

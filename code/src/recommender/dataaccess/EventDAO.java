@@ -307,6 +307,45 @@ public class EventDAO {
 	
 	
 	/**
+	 * Checks if the user has already viewed a story
+	 * @param user User
+	 * @param story Story
+	 * @return True if the user has viewed the story
+	 */
+	public boolean isStoryViewed(IRUser user, IRStory story) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		boolean result = false;
+		
+		try
+		{
+			if((story != null) && (user != null)) {
+				connection = _ConnectionManager.getConnection();
+				stmt = connection.prepareStatement("select 1 from ir_story_view_log as sv inner join ir_event_log as el on el.id = sv.id where el.UserId = ? and sv.StoryId = ?");
+				stmt.setLong(1, user.getId());
+				stmt.setLong(2, story.getId());
+				rs = stmt.executeQuery();
+				
+				result = rs.next();
+			}
+		}
+		catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
 	 * Lists the stories views and scores that the user has liked
 	 * @param user Selected User
 	 * @param limit Limit of the list (or null for all)
@@ -344,6 +383,7 @@ public class EventDAO {
 			ex.printStackTrace();
 		}
 		finally {
+			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(stmt);
 			DBUtil.closeConnection(connection);
 		}
