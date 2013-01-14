@@ -27,10 +27,10 @@ public class Test {
 	public static void main(String[] args) {
 		try
 		{
-			System.setProperty(ConnectionManager.URL_KEY, "jdbc:mysql://localhost/recommender_server");
+			System.setProperty(ConnectionManager.URL_KEY, "jdbc:mysql://localhost/meertens");
 			System.setProperty(ConnectionManager.DRIVERNAME_KEY, "com.mysql.jdbc.Driver");
 			System.setProperty(ConnectionManager.USER_KEY, "root");
-			System.setProperty(ConnectionManager.PASSWORD_KEY, "123");
+			System.setProperty(ConnectionManager.PASSWORD_KEY, "password");
 			System.setProperty(ConnectionManager.CONNECTION_SOURCE_KEY, 
 					ConnectionManager.ConnectionSource.DIRECT.toString());
 			
@@ -40,15 +40,15 @@ public class Test {
 //			
 //			StoryViewTypeBean sv = new StoryViewTypeBean();
 			
-			System.setProperty("terrier.home", "/usr/local/terrier");
-			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, "/usr/local/terrier/var/index");
-			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, "/usr/local/terrier/var/index_recommender");
+//			System.setProperty("terrier.home", "/usr/local/terrier");
+//			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, "/usr/local/terrier/var/index");
+//			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, "/usr/local/terrier/var/index_recommender");
 			
-//			System.setProperty("terrier.home", "C:\\Users\\feroo\\workspace\\my_terrier");
-//			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
-//					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_search");
-//			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
-//					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_recommender");
+			System.setProperty("terrier.home", "C:\\Users\\feroo\\workspace\\my_terrier");
+			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 
+					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_search");
+			System.setProperty(TerrierManager.TERRIER_RECOMMENDER_INDEX_PATH, 
+					"C:\\Users\\feroo\\workspace\\my_terrier\\var\\index_recommender");
 			
 //			System.setProperty("terrier.home", "C:\\cygwin\\home\\feroo\\IR\\terrier-3.5");
 //			System.setProperty(TerrierManager.TERRIER_SEARCH_INDEX_PATH, 

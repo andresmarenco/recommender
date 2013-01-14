@@ -34,6 +34,10 @@ public class Evaluation {
 	private static final int EVALUATION_ITERATIONS = 100;
 	private static final float TEST_SET_SIZE = 0.8F;
 	
+	/**
+	 * The number of pieces used in the validation.
+	 */
+	private static final int CROSS_VALIDATION_PIECES = 3;
 	
 	private HistogramList histograms;
 	private BufferedWriter writer;
@@ -133,80 +137,29 @@ public class Evaluation {
 			}
 			
 			int viewedTotal = viewedStories.size();
+			double pieceSize = viewedTotal / CROSS_VALIDATION_PIECES;
+			
 			
 			
 			// Separates the log into a test set and a training set and counts their size and
 			// how many likes they contain
 			int limit = Math.round(viewedTotal * TEST_SET_SIZE);
-			int trainingLikes = 0;
-			int testLikes = 0;
 			
-			List<IRStoryUserStatistics> trainingSet = viewedStories.subList(limit, viewedTotal);
-			List<IRStoryUserStatistics> testSet = viewedStories.subList(0, limit);
-			Map<IRStory, IRStoryUserStatistics> testSetMap = new HashMap<IRStory, IRStoryUserStatistics>();
+//			List<IRStoryUserStatistics> trainingSet = viewedStories.subList(limit, viewedTotal);
+//			List<IRStoryUserStatistics> testSet = viewedStories.subList(0, limit);
+			List<IRStoryUserStatistics> trainingSet;
+			List<IRStoryUserStatistics> testSet;
 			
-			for(IRStoryUserStatistics stats : trainingSet) {
-				if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) trainingLikes++;
-			}
-			System.out.println("TRAINING LIKES " + trainingLikes);
-			
-			int testTotal = testSet.size();
-			for(IRStoryUserStatistics stats : testSet) {
-				testSetMap.put(stats.getStory(), stats);
-				if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) testLikes++;
-			}
-			
-			System.out.println("TEST LIKES " + testLikes);
-			
-			
-			// Creates a user model using only the training set. 
-			// Iterates EVALUATION_ITERATIONS times, applying the recommendation
-			// algorithm and checking if the recommended stories are part of the
-			// test set and also if they are part of the complete log.
-			// After that, constructs a histogram with the found recommendations. 
-			if(user == null) {
-				user = new IRUser();
-				user.setId(-1L);
-			}
-			UserModel userModel = new ContentUserModel(user, trainingSet);
-			
-			
-			// Sets the current user for the histogram
-			this.histograms.setCurrentUser(user);
-						
-						
-			for (int i = 0; i < EVALUATION_ITERATIONS; i++) {
-				this.histograms.resetAllCounters();
-				
-				System.out.println(MessageFormat.format("User: {0} / Iteration: {1}", user.getId(), (i+1)));
-				queryId++;
-				RecommendationMetadata recommendations = this.recommendationManager.recommendStoriesMetadata(userModel, RECOMMENDATIONS_TOTAL);
-				for(IRStory story : recommendations.getResult()) {
-					IRStoryUserStatistics viewStats = viewedSetMap.get(story);
-					if(viewStats != null) {
-						this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}",
-								user.getId(),
-								story.getCode(),
-								viewStats.getScore(),
-								story.getRecommendationRank(),
-								testSetMap.containsKey(story),
-								queryId,
-								recommendations.getQuery(),
-								testTotal,
-								viewedTotal,
-								testLikes,
-								(testLikes+trainingLikes)
-								));
-						
-						this.writer.newLine();
-					}
-
-					this.histograms.putInAll(story);
-				}
+			for (int i = 0; i < CROSS_VALIDATION_PIECES; i++) {
+				trainingSet = new ArrayList<IRStoryUserStatistics>();
+				testSet = new ArrayList<IRStoryUserStatistics>();
+				testSet = viewedStories.subList((int)(i * pieceSize), (int)((i + 1) * pieceSize));
+				trainingSet.addAll(viewedStories);
+				trainingSet.removeAll(testSet);
+				evaluateUser(user, trainingSet, testSet, viewedSetMap, viewedTotal);
 			}
 			
 			
-			this.histograms.flushAll();
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -215,13 +168,127 @@ public class Evaluation {
 	
 	
 	
+	private void evaluateUser(IRUser user,
+			List<IRStoryUserStatistics> trainingSet,
+			List<IRStoryUserStatistics> testSet,
+			Map<IRStory, IRStoryUserStatistics> viewedSetMap,
+			int viewedTotal) throws IOException {
+		
+		int trainingLikes = 0;
+		int testLikes = 0;
+		Map<IRStory, IRStoryUserStatistics> testSetMap = new HashMap<IRStory, IRStoryUserStatistics>();
+		
+		for(IRStoryUserStatistics stats : trainingSet) {
+			if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) trainingLikes++;
+		}
+		System.out.println("TRAINING LIKES " + trainingLikes);
+		
+		int testTotal = testSet.size();
+		for(IRStoryUserStatistics stats : testSet) {
+			testSetMap.put(stats.getStory(), stats);
+			if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) testLikes++;
+		}
+		
+		System.out.println("TEST LIKES " + testLikes);
+		
+		
+		// Creates a user model using only the training set. 
+		// Iterates EVALUATION_ITERATIONS times, applying the recommendation
+		// algorithm and checking if the recommended stories are part of the
+		// test set and also if they are part of the complete log.
+		// After that, constructs a histogram with the found recommendations. 
+		if(user == null) {
+			user = new IRUser();
+			user.setId(-1L);
+		}
+		UserModel userModel = new ContentUserModel(user, trainingSet);
+		
+		
+		// Sets the current user for the histogram
+		this.histograms.setCurrentUser(user);
+					
+					
+		for (int i = 0; i < EVALUATION_ITERATIONS; i++) {
+			this.histograms.resetAllCounters();
+			
+			System.out.println(MessageFormat.format("User: {0} / Iteration: {1}", user.getId(), (i+1)));
+			queryId++;
+			RecommendationMetadata recommendations = this.recommendationManager.recommendStoriesMetadata(userModel, RECOMMENDATIONS_TOTAL);
+			double foundStories = 0;
+			double retrievedStories = 0;
+			double precesionAt5 = -1;
+			double precesionAt10 = -1;
+			double precesionAt20 = -1;
+			double recallAt5 = -1;
+			double recallAt10 = -1;
+			double recallAt20 = -1;
+			for(IRStory story : recommendations.getResult()) {
+				IRStoryUserStatistics viewStats = viewedSetMap.get(story);
+				if(viewStats != null) {
+//					this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}",
+//							user.getId(),
+//							story.getCode(),
+//							viewStats.getScore(),
+//							story.getRecommendationRank(),
+//							testSetMap.containsKey(story),
+//							queryId,
+//							recommendations.getQuery(),
+//							testTotal,
+//							viewedTotal,
+//							testLikes,
+//							(testLikes+trainingLikes)
+//							));
+//					this.writer.newLine();
+					retrievedStories++;
+					if (viewStats.getScore() > 0) {
+						foundStories++;
+					}
+					if(retrievedStories == 5) {
+						precesionAt5 = foundStories / retrievedStories;
+						recallAt5 = foundStories / (testLikes + trainingLikes);
+					}
+					if(retrievedStories == 10) {
+						precesionAt10 = foundStories / retrievedStories;
+						recallAt10 = foundStories / (testLikes + trainingLikes);
+					}
+					if(retrievedStories == 20) {
+						precesionAt20 = foundStories / retrievedStories;
+						recallAt20 = foundStories / (testLikes + trainingLikes);
+					}
+					
+				}
+				this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7}",
+						user.getId(),
+						queryId,
+						precesionAt5,
+						precesionAt10,
+						precesionAt20,
+						recallAt5,
+						recallAt10,
+						recallAt20
+						));
+				this.writer.newLine();
+				this.histograms.putInAll(story);
+			}
+			
+		}
+		
+		
+		this.histograms.flushAll();
+		
+	}
+
+
+
+
 	/**
 	 * Performs the evaluation on all the users of the system
 	 */
 	public void evaluate() {
 		try
 		{
-			this.writer.write("User ID; Story Code; Score; Rank; Present in Test Set; Query ID; Query; # Stories in Test Set; # Stories in Total; # Likes in Test Set; # Likes in Total");
+//			this.writer.write("User ID; Story Code; Score; Rank; Present in Test Set; Query ID; Query; # Stories in Test Set; # Stories in Total; # Likes in Test Set; # Likes in Total");
+			this.writer.write("User ID; Query ID; P@5; P@10; P@20; R@5; R@10; R@20 ");
 			this.writer.newLine();
 			
 			// Evaluates all the users (except root)
