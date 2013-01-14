@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 public class IRUser implements Serializable {
 
 	private static final long serialVersionUID = 201211301513L;
+	private static final long ROOT_ID = 1L;
 	
 	private long id;
 	private String username;
@@ -36,8 +37,8 @@ public class IRUser implements Serializable {
 		this.name = null;
 		this.last_login = null;
 		this.active = false;
-	}
-
+	}	
+	
 
 	/**
 	 * @return the id
@@ -138,12 +139,20 @@ public class IRUser implements Serializable {
 	}
 
 	
-	
 	/**
 	 * Determines if the user is logged
 	 * @return
 	 */
 	public boolean isLogged() {
 		return this.id != Long.MIN_VALUE;
+	}
+	
+	
+	/**
+	 * Determines if the current user is the root user
+	 * @return True if the user is root
+	 */
+	public boolean isRoot() {
+		return this.id == ROOT_ID;
 	}
 }

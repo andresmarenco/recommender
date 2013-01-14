@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -237,5 +239,47 @@ public class UserDAO {
 			EventDAO eventDAO = new EventDAO();
 			eventDAO.logEvent(user, IREventType.EVENT_LOGOUT);
 		}
+	}
+	
+	
+	
+	
+	/**
+	 * Lists all the user in the database
+	 * @return List with all the users
+	 * @throws SQLException
+	 */
+	public List<IRUser> listUsers() throws SQLException {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<IRUser> result = new ArrayList<IRUser>();
+		
+		try
+		{
+			connection = _ConnectionManager.getConnection();
+			stmt = connection.prepareStatement("select * from ir_user");
+			
+			rs = stmt.executeQuery();
+			IRUser current_user;
+			
+			while(rs.next()) {
+				current_user = new IRUser();
+				current_user.setId(rs.getLong("id"));
+				current_user.setUsername(rs.getString("username"));
+				current_user.setName(rs.getString("name"));
+				current_user.setLast_login(rs.getTimestamp("last_login"));
+				current_user.setActive(rs.getBoolean("active"));
+				
+				result.add(current_user);
+			}
+		}
+		finally {
+			DBUtil.closeResultSet(rs);
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
 	}
 }

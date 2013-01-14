@@ -23,6 +23,7 @@ public class IRStory implements Serializable {
 	private IRScriptSource scriptSource;
 	private IRRegion region;
 	private IRSubgenre subgenre;
+	private long recommendationRank;
 	
 	
 	
@@ -369,6 +370,27 @@ public class IRStory implements Serializable {
 	 */
 	public void setSubgenre(IRSubgenre subgenre) {
 		this.subgenre = subgenre;
+	}
+	
+
+
+
+
+	/**
+	 * @return the recommendationRank
+	 */
+	public long getRecommendationRank() {
+		return recommendationRank;
+	}
+
+
+
+
+	/**
+	 * @param recommendationRank the recommendationRank to set
+	 */
+	public void setRecommendationRank(long recommendationRank) {
+		this.recommendationRank = recommendationRank;
 	}
 
 

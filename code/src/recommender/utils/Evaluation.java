@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,47 +21,79 @@ import recommender.dataaccess.UserDAO;
 import recommender.model.ContentUserModel;
 import recommender.model.UserModel;
 import recommender.querying.RecommendationManager;
+import recommender.querying.RecommendationManager.RecommendationMetadata;
 import recommender.web.controller.StoryScoreController;
 
 public class Evaluation {
 
 	private static final String OUTPUT_FILE_NAME = "/home/andres/evaluation.txt";
+	private static final String HISTOGRAM6_FILE_NAME = "/home/andres/histogram6.txt";
+	private static final String HISTOGRAM10_FILE_NAME = "/home/andres/histogram10.txt";
+	private static final int RECOMMENDATIONS_TOTAL = 1000;
+	private static final int EVALUATION_ITERATIONS = 100;
+	private static final float TEST_SET_SIZE = 0.8F;
+	
+	
+	private HistogramList histograms;
 	private BufferedWriter writer;
 	private RecommendationManager recommendationManager;
+	private int queryId;
+	private EventDAO eventDAO;
 	
+	
+	/**
+	 * Default Constructor
+	 */
 	public Evaluation() {
 		this.recommendationManager = new RecommendationManager();
-		this.initBufferedWriter(OUTPUT_FILE_NAME);
+		this.writer = initBufferedWriter(OUTPUT_FILE_NAME);
+		this.histograms = new HistogramList();
+		this.histograms.add(new Histogram(HISTOGRAM6_FILE_NAME, 6));
+		this.histograms.add(new Histogram(HISTOGRAM10_FILE_NAME, 10));
+		this.eventDAO = new EventDAO();
+		
+		this.queryId = 0;
 	}
 	
 	
-	private BufferedWriter initBufferedWriter(String pathname) {
-		this.writer = null;
+	
+	
+	/**
+	 * Creates a BufferedWriter in the path name. If it already exists, clears it 
+	 * @param pathName Name of the file for the writer
+	 * @return BufferedWriter in the specified path name.
+	 */
+	private static BufferedWriter initBufferedWriter(String pathName) {
+		BufferedWriter writer = null;
 		
 		try
 		{
-			File file = new File(pathname);
+			File file = new File(pathName);
 			if(!file.exists()) {
 				file.createNewFile();
 			}
 			
 			FileWriter fw = new FileWriter(file.getAbsoluteFile(), false);
-			this.writer = new BufferedWriter(fw);
+			writer = new BufferedWriter(fw);
 		}
 		catch(IOException ex) {
 			ex.printStackTrace();
 		}
 		
-		return this.writer;
+		return writer;
 	}
 	
 	
 	
 	
-	private void closeWriter() {
+	/**
+	 * Closes the specified BufferedWriter
+	 * @param writer Writer to close
+	 */
+	private static void closeWriter(BufferedWriter writer) {
 		try
 		{
-			this.writer.close();
+			if(writer != null) writer.close();
 		}
 		catch(IOException ex) {
 			ex.printStackTrace();
@@ -70,58 +103,108 @@ public class Evaluation {
 	
 	
 	
+	/**
+	 * Closes all the writers used in the evaluation
+	 */
+	private void closeAllWriters() {
+		Evaluation.closeWriter(this.writer);
+		this.histograms.closeAllWriters();
+	}
+	
+	
+	
+	
+	/**
+	 * Runs the evaluation on a specified user
+	 * @param user User to evaluate
+	 */
 	private void evaluateUser(IRUser user) {
 		try
 		{
-			EventDAO eventDAO = new EventDAO();
-			List<IRStoryUserStatistics> viewedStories = eventDAO.listUserStoryViews(user);
+			// Gets the log of all the viewed stories of the user and puts it into a hash map
+			List<IRStoryUserStatistics> viewedStories = (user != null) ? eventDAO.listUserStoryViews(user) : eventDAO.listAllUsersStoryViews(null);
 			Collections.shuffle(viewedStories);
 			
-			int size = viewedStories.size();
-			int limit = Math.round(size * 0.5F);
+			Map<IRStory, IRStoryUserStatistics> viewedSetMap = new HashMap<IRStory, IRStoryUserStatistics>();
+			for(IRStoryUserStatistics stats : viewedStories) {
+				viewedSetMap.put(stats.getStory(), stats);
+			}
 			
-			List<IRStoryUserStatistics> trainingSet = viewedStories.subList(limit, size);
+			int viewedTotal = viewedStories.size();
+			
+			
+			// Separates the log into a test set and a training set and counts their size and
+			// how many likes they contain
+			int limit = Math.round(viewedTotal * TEST_SET_SIZE);
+			int trainingLikes = 0;
+			int testLikes = 0;
+			
+			List<IRStoryUserStatistics> trainingSet = viewedStories.subList(limit, viewedTotal);
 			List<IRStoryUserStatistics> testSet = viewedStories.subList(0, limit);
 			Map<IRStory, IRStoryUserStatistics> testSetMap = new HashMap<IRStory, IRStoryUserStatistics>();
 			
-			int likes = 0;
-			
 			for(IRStoryUserStatistics stats : trainingSet) {
-				if(stats.getScore() == StoryScoreController.LIKE_SCORE) likes++;
+				if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) trainingLikes++;
 			}
-			System.out.println("TRAINING SET LIKES: " + likes);
+			System.out.println("TRAINING LIKES " + trainingLikes);
 			
-			
-			likes = 0;
-			System.out.println("TEST SET: ");
+			int testTotal = testSet.size();
 			for(IRStoryUserStatistics stats : testSet) {
 				testSetMap.put(stats.getStory(), stats);
-				System.out.print(stats.getStory().getCode() + " / ");
-				if(stats.getScore() == StoryScoreController.LIKE_SCORE) likes++;
+				if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) testLikes++;
 			}
-			System.out.println();
-			System.out.println("TEST SET LIKES: " + likes);
+			
+			System.out.println("TEST LIKES " + testLikes);
 			
 			
+			// Creates a user model using only the training set. 
+			// Iterates EVALUATION_ITERATIONS times, applying the recommendation
+			// algorithm and checking if the recommended stories are part of the
+			// test set and also if they are part of the complete log.
+			// After that, constructs a histogram with the found recommendations. 
+			if(user == null) {
+				user = new IRUser();
+				user.setId(-1L);
+			}
 			UserModel userModel = new ContentUserModel(user, trainingSet);
 			
-			for (int i = 0; i < 10; i++) {
-				System.out.println("ITERATION " + (i+1));
-				List<IRStory> recommendations = this.recommendationManager.recommendStories(userModel);
-				for(IRStory story : recommendations) {
-					System.out.print(MessageFormat.format("Story: {0}", story.getCode()));
-					IRStoryUserStatistics testStats = testSetMap.get(story);
-					if(testStats != null) {
-						System.out.println(MessageFormat.format(" / Score in Test Set: {0}", testStats.getScore()));
-					} else {
-						System.out.println();
-					}
-				}
+			
+			// Sets the current user for the histogram
+			this.histograms.setCurrentUser(user);
+						
+						
+			for (int i = 0; i < EVALUATION_ITERATIONS; i++) {
+				this.histograms.resetAllCounters();
 				
-				System.out.println("-----------------------------------\n\n\n");
+				System.out.println(MessageFormat.format("User: {0} / Iteration: {1}", user.getId(), (i+1)));
+				queryId++;
+				RecommendationMetadata recommendations = this.recommendationManager.recommendStoriesMetadata(userModel, RECOMMENDATIONS_TOTAL);
+				for(IRStory story : recommendations.getResult()) {
+					IRStoryUserStatistics viewStats = viewedSetMap.get(story);
+					if(viewStats != null) {
+						this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}",
+								user.getId(),
+								story.getCode(),
+								viewStats.getScore(),
+								story.getRecommendationRank(),
+								testSetMap.containsKey(story),
+								queryId,
+								recommendations.getQuery(),
+								testTotal,
+								viewedTotal,
+								testLikes,
+								(testLikes+trainingLikes)
+								));
+						
+						this.writer.newLine();
+					}
+
+					this.histograms.putInAll(story);
+				}
 			}
 			
 			
+			this.histograms.flushAll();
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -130,16 +213,27 @@ public class Evaluation {
 	
 	
 	
-	
+	/**
+	 * Performs the evaluation on all the users of the system
+	 */
 	public void evaluate() {
 		try
 		{
+			this.writer.write("User ID; Story Code; Score; Rank; Present in Test Set; Query ID; Query; # Stories in Test Set; # Stories in Total; # Likes in Test Set; # Likes in Total");
+			this.writer.newLine();
+			
+			// Evaluates all the users (except root)
 			UserDAO userDAO = new UserDAO();
+			for(IRUser user : userDAO.listUsers()) {
+				if(!user.isRoot()) {
+					this.evaluateUser(user);
+				}
+			}
 			
-			this.evaluateUser(userDAO.loadUser(25l));
+			// User with all the data
+			this.evaluateUser(null);
 			
-			
-			this.closeWriter();
+			this.closeAllWriters();
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -169,6 +263,178 @@ public class Evaluation {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+	
+	
+	
+	/**
+	 * Histogram list
+	 * @author andres
+	 *
+	 */
+	private static class HistogramList extends ArrayList<Histogram> {
+		private static final long serialVersionUID = 201301140140L;
+		
+		/**
+		 * Closes all the histograms in the list
+		 */
+		public void closeAllWriters() {
+			for(Histogram histogram : this) {
+				histogram.closeWriter();
+			}
+		}
+		
+		
+		/**
+		 * Resets all counter of the histograms in the list
+		 */
+		public void resetAllCounters() {
+			for(Histogram histogram : this) {
+				histogram.resetCounter();
+			}
+		}
+		
+		
+		/**
+		 * Sets the user in all the histograms in the list
+		 * @param user Current User
+		 */
+		public void setCurrentUser(IRUser user) {
+			for(Histogram histogram : this) {
+				histogram.setCurrentUser(user);
+			}
+		}
+		
+		
+		/**
+		 * Puts a story in all the histograms in the list
+		 * @param story Story
+		 */
+		public void putInAll(IRStory story) {
+			for(Histogram histogram : this) {
+				histogram.put(story);
+			}
+		}
+		
+		
+		/**
+		 * Flushes all the histograms into their corresponding output files
+		 */
+		public void flushAll() {
+			for(Histogram histogram : this) {
+				histogram.flush();
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * Hash Map with the Histogram of the Recommendations
+	 * @author andres
+	 *
+	 */
+	private static class Histogram extends HashMap<IRStory, Integer> {
+		
+		private static final long serialVersionUID = 201301140139L;
+		
+		private BufferedWriter histogramWriter;
+		private final int limit;
+		private int currentCount;
+		private IRUser currentUser;
+		
+		/**
+		 * Default Constructor
+		 * @param pathName Path Name of the Output File
+		 * @param limit Limit of the histogram (evaluate n recommendations per iteration)
+		 */
+		public Histogram(String pathName, int limit) {
+			this.histogramWriter = initBufferedWriter(pathName);
+			this.limit = limit;
+			this.currentCount = 0;
+			
+			try
+			{
+				this.histogramWriter.write("User Id; Story Code; Story Count");
+				this.histogramWriter.newLine();
+			}
+			catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		
+		/**
+		 * Resets the counter of the recommendations in the iteration
+		 */
+		public void resetCounter() {
+			this.currentCount = 0;
+		}
+		
+		
+		/**
+		 * Current user for the Histogram
+		 * @param user
+		 */
+		public void setCurrentUser(IRUser user) {
+			this.currentUser = user;
+		}
+		
+		
+		/**
+		 * Flushes the content of the Histogram into the output file
+		 */
+		public void flush() {
+			try
+			{
+				for(Map.Entry<IRStory, Integer> values : this.entrySet()) {
+					this.histogramWriter.write(MessageFormat.format("{0};{1};{2}",
+							this.currentUser.getId(),
+							values.getKey().getCode(),
+							values.getValue()));
+					
+					this.histogramWriter.newLine();
+				}
+				
+				this.clear();
+				this.resetCounter();
+			}
+			catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		
+		/**
+		 * Closes the writer to the output file
+		 */
+		public void closeWriter() {
+			Evaluation.closeWriter(this.histogramWriter);
+		}
+		
+		
+		/**
+		 * Puts a new story into the histogram. If it already exists, increments the count
+		 * @param story Story
+		 * @return Count of the story in the histogram
+		 */
+		public Integer put(IRStory story) {
+			Integer result = null;
+			
+			if(currentCount < limit) {
+				result = super.get(story);
+				if(result == null) {
+					super.put(story, 1);
+					result = 1;
+				} else {
+					super.put(story, result+1);
+				}
+				
+				currentCount++;
+			}
+			
+			return result;
 		}
 	}
 }

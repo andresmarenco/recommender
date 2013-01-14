@@ -253,6 +253,61 @@ public class EventDAO {
 	
 	
 	/**
+	 * Lists the stories views and scores of all the users
+	 * @param limit Limit of the list (or null for all)
+	 * @return List with user's views statistics
+	 */
+	public List<IRStoryUserStatistics> listAllUsersStoryViews(Integer limit) {
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<IRStoryUserStatistics> result = null;
+		
+		try
+		{
+			IRUser user = new IRUser();
+			user.setId(-1L);
+			
+			result = new ArrayList<IRStoryUserStatistics>();
+			connection = _ConnectionManager.getConnection();
+			StringBuilder query = new StringBuilder("select s.id as StoryId, count(vl.id) as Views, coalesce((select sum(us.score) from ir_story_user_score as us where us.storyId = s.id), 0) as Score from story as s inner join ir_story_view_log as vl on s.Id = vl.StoryId group by s.id");
+			
+			if(limit != null) {
+				stmt = connection.prepareStatement(query.append(" limit ? ").toString());
+				stmt.setInt(1, limit.intValue());
+			} else {
+				stmt = connection.prepareStatement(query.toString());
+			}
+			
+			rs = stmt.executeQuery();
+			IRStoryUserStatistics stats;
+			StoryDAO storyDAO = new StoryDAO();
+			
+			while(rs.next()) {
+				stats = new IRStoryUserStatistics();
+				stats.setUser(user);
+				stats.setStory(storyDAO.loadStory(rs.getLong("storyId"), true));
+				stats.setScore(rs.getFloat("score"));
+				stats.setViews(rs.getLong("views"));
+				
+				result.add(stats);
+			}
+		}
+		catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			DBUtil.closeStatement(stmt);
+			DBUtil.closeConnection(connection);
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	/**
 	 * Lists the stories views and scores of the user ordered descending by the last story viewed
 	 * @param user Selected User
 	 * @param limit Limit of the list (or null for all)
