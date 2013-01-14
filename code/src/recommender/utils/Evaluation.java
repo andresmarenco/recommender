@@ -227,7 +227,7 @@ public class Evaluation {
 			// Evaluates all the users (except root)
 			UserDAO userDAO = new UserDAO();
 			for(IRUser user : userDAO.listUsers()) {
-				if(!user.isRoot()) {
+				if((!user.isRoot()) && (user.isActive())) {
 					this.evaluateUser(user);
 				}
 			}
