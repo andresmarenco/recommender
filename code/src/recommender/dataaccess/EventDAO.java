@@ -270,7 +270,7 @@ public class EventDAO {
 			
 			result = new ArrayList<IRStoryUserStatistics>();
 			connection = _ConnectionManager.getConnection();
-			StringBuilder query = new StringBuilder("select s.id as StoryId, count(vl.id) as Views, coalesce((select sum(us.score) from ir_story_user_score as us where us.storyId = s.id), 0) as Score from story as s inner join ir_story_view_log as vl on s.Id = vl.StoryId group by s.id");
+			StringBuilder query = new StringBuilder("select s.id as StoryId, count(vl.id) as Views, coalesce((select sum(us.score) from ir_story_user_score as us where us.storyId = s.id), 0) as Score from story as s inner join ir_story_view_log as vl on s.Id = vl.StoryId inner join ir_event_log as el on el.id = vl.id inner join ir_user as u on u.id = el.UserId where u.id <> 1 and u.active = 1 group by s.id");
 			
 			if(limit != null) {
 				stmt = connection.prepareStatement(query.append(" limit ? ").toString());

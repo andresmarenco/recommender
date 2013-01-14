@@ -27,8 +27,9 @@ import recommender.web.controller.StoryScoreController;
 public class Evaluation {
 
 	private static final String OUTPUT_FILE_NAME = "/home/andres/evaluation.txt";
-	private static final String HISTOGRAM6_FILE_NAME = "/home/andres/histogram6.txt";
+	private static final String HISTOGRAM5_FILE_NAME = "/home/andres/histogram5.txt";
 	private static final String HISTOGRAM10_FILE_NAME = "/home/andres/histogram10.txt";
+	private static final String HISTOGRAM20_FILE_NAME = "/home/andres/histogram20.txt";
 	private static final int RECOMMENDATIONS_TOTAL = 1000;
 	private static final int EVALUATION_ITERATIONS = 100;
 	private static final float TEST_SET_SIZE = 0.8F;
@@ -48,8 +49,9 @@ public class Evaluation {
 		this.recommendationManager = new RecommendationManager();
 		this.writer = initBufferedWriter(OUTPUT_FILE_NAME);
 		this.histograms = new HistogramList();
-		this.histograms.add(new Histogram(HISTOGRAM6_FILE_NAME, 6));
+		this.histograms.add(new Histogram(HISTOGRAM5_FILE_NAME, 5));
 		this.histograms.add(new Histogram(HISTOGRAM10_FILE_NAME, 10));
+		this.histograms.add(new Histogram(HISTOGRAM20_FILE_NAME, 20));
 		this.eventDAO = new EventDAO();
 		
 		this.queryId = 0;

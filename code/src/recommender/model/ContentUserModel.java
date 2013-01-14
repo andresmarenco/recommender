@@ -74,9 +74,17 @@ public class ContentUserModel extends UserModel {
 	@Override
 	public List<BagValue> getModelFeatures() {
 		List<BagValue> features = this.getCurrentFeatureBag().getOrderedFeatures();
-		features = features.subList(0, Math.min(DEFAULT_NUMBER_OF_IMPORTANT_FEATURES, features.size()));
 		
-		Collections.shuffle(features);
+		if(!features.isEmpty()) {
+			int size = features.size();
+			int limit = Math.round(size * DEFAULT_PERCENTAGE_OF_IMPORTANT_FEATURES);
+			limit = Math.max(DEFAULT_NUMBER_OF_IMPORTANT_FEATURES, limit);
+			
+			features = features.subList(0, Math.min(limit, size));
+			
+			Collections.shuffle(features);
+		}
+		
 		return features;
 	}
 

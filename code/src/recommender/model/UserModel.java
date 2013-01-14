@@ -19,6 +19,7 @@ import recommender.utils.LRUCacheMap;
 
 public abstract class UserModel {
 	protected static final int DEFAULT_NUMBER_OF_IMPORTANT_FEATURES = 60;
+	protected static final float DEFAULT_PERCENTAGE_OF_IMPORTANT_FEATURES = 0.3F;
 	protected static final int SESSION_SIZE = 10;
 	protected IRUser currentUser;
 	protected Map<IRStory, IRStoryUserStatistics> storySession;
