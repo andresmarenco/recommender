@@ -96,7 +96,19 @@ public class FeedbackUserModel extends UserModel {
 
 	@Override
 	public List<BagValue> getModelFeatures() {
-		return this.getOrderedFeatures();
+		List<BagValue> features = this.getCurrentFeatureBag().getOrderedFeatures();
+		
+		if(!features.isEmpty()) {
+			int size = features.size();
+			int limit = Math.round(size * DEFAULT_PERCENTAGE_OF_IMPORTANT_FEATURES);
+			limit = Math.max(DEFAULT_NUMBER_OF_IMPORTANT_FEATURES, limit);
+			
+			features = features.subList(0, Math.min(limit, size));
+			
+			Collections.shuffle(features);
+		}
+		
+		return features;
 	}
 
 
