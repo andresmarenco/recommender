@@ -188,11 +188,13 @@ public class RetrievalManager {
     	}
     	
     }
-
+    
+    
+    
+    
     /**
-	 * performs a search for a multiTermQuery
-	 * 
-	 * @param mtq
+	 * Performs a search for a multiTermQuery
+	 * @param mtq Multi Term Query
 	 * @param start the offset (position) of the first result
 	 * @param results the number of the returned results (size of the window)
 	 * @return the resultset
@@ -224,11 +226,13 @@ public class RetrievalManager {
         rs = search.getResultSet();
         return rs;
 	}
-
+	
+	
+	
+	
 	/**
-	 * performs a search for a multiTermQuery
-	 * 
-	 * @param mtq
+	 * Performs a search for a multiTermQuery
+	 * @param mtq Multi Term Query
 	 * @param start the offset (position) of the first result
 	 * @param results the number of the returned results (size of the window)
 	 * @return list of stories, their size equals or is smaller than the @param results

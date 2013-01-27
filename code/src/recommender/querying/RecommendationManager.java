@@ -2,12 +2,15 @@ package recommender.querying;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.terrier.matching.ResultSet;
 import org.terrier.querying.parser.FieldQuery;
 import org.terrier.querying.parser.MultiTermQuery;
+import org.terrier.querying.parser.Query;
 import org.terrier.querying.parser.SingleTermQuery;
+import org.terrier.utility.ApplicationSetup;
 
 import recommender.beans.IRStory;
 import recommender.dataaccess.RetrievalManager;
@@ -21,14 +24,21 @@ import recommender.web.controller.StoryScoreController;
 
 public class RecommendationManager {
 	
-	RetrievalManager retrievalManager;
-
-	private static final int DEFAULT_RECOMMENDATIONS = 6;
-	
 	/**
 	 * Maximum number of features in a query performed when a recommendation is needed.
 	 */
 	private static final int NUMBER_OF_FEATURES = 20;
+	/**
+	 * Default number of recommendations retrieved.
+	 */
+	private static final int DEFAULT_RECOMMENDATIONS = 6;
+
+	
+	
+	private RetrievalManager retrievalManager;
+	
+	private static final String[] FIELD_MODELS = { "PL2F", "BM25F" };
+	private final QueryTermType queryTermType;
 	
 	
 	/**
@@ -36,6 +46,12 @@ public class RecommendationManager {
 	 */
 	public RecommendationManager() {
 		super();
+		String currentModel = ApplicationSetup.getProperty("trec.model", "PL2");
+		if(Arrays.asList(FIELD_MODELS).contains(currentModel)) {
+			this.queryTermType = QueryTermType.FIELD;
+		} else {
+			this.queryTermType = QueryTermType.BASIC;
+		}
 
 		try
 		{
@@ -87,32 +103,23 @@ public class RecommendationManager {
 			MultiTermQuery mtq = new MultiTermQuery();
 			
 			int j = 0;
-//			int size = Math.min(NUMBER_OF_FEATURES, features.size()/5);
 			
 			for(BagValue feature : features) {
 				double weight = feature.getTotal_weight();
 				
 				if(weight > 0.0D) {
-					FieldQuery fq = new FieldQuery();
-					fq.setField(feature.getField().getIndexTag().toLowerCase());
+					Query q = this.createQueryTerm(feature);
+					if(q != null) {
+						mtq.add(q);
+						
+						if(j++ == NUMBER_OF_FEATURES)
+							break;
+					}
 					
-					SingleTermQuery stq = this.createSingleTermQuery(feature);
-					if(stq == null)
-						continue;
-					fq.setChild(stq);
-					mtq.add(fq);
-					if(j++ == NUMBER_OF_FEATURES)
-						break;
 				} else {
 					System.out.println(MessageFormat.format("Ignoring negative weight {0} on feature {1}...", weight, feature.toString()));
 				}
 			}
-			
-//			FieldQuery fq = new FieldQuery();
-//			fq.setField("TAAL");
-//			SingleTermQuery stq = new SingleTermQuery("standaardnederlands");
-//			fq.setChild(stq);
-//			mtq.add(fq);
 			
 			System.out.println("performing recommendation query: " + mtq.toString());
 			ResultSet rs = this.retrievalManager.search(mtq, null, null);
@@ -139,7 +146,6 @@ public class RecommendationManager {
 		
 		if((term != null) && (!term.isEmpty())) {
 			stq = new SingleTermQuery();
-//			System.out.println(MessageFormat.format("{0}:\"{1}\"^{2}", bagFeature.getField().getIndexTag(), term, bagFeature.getTotal_weight()));
 			stq.setWeight(bagFeature.getTotal_weight());
 			stq.setTerm(bagFeature.toString());
 		} else {
@@ -147,6 +153,39 @@ public class RecommendationManager {
 		}
 				
 		return stq;
+	}
+	
+	
+	
+	
+	/**
+	 * Creates a query term with the feature
+	 * @param feature Bag Feature
+	 * @return Query Term
+	 */
+	private Query createQueryTerm(BagValue feature) {
+		Query result = null;
+		SingleTermQuery stq = this.createSingleTermQuery(feature);
+		
+		if((feature != null) && (stq != null)) {
+			switch(queryTermType) {
+			case FIELD: {
+				FieldQuery fq = new FieldQuery();
+				fq.setField(feature.getField().getIndexTag().toLowerCase());
+				fq.setChild(stq);
+				result = fq;
+				break;
+			}
+			
+			case BASIC:
+			default: {
+				result = stq;
+				break;
+			}
+			}
+		}
+		
+		return result;
 	}
 	
 	
@@ -161,7 +200,7 @@ public class RecommendationManager {
 	 */
 	private List<IRStory> getRecommendations(UserModel user_model, ResultSet rs, int limit) {
 		List<IRStory> result = new ArrayList<IRStory>();
-		
+
 		try
 		{
 			StoryDAO storyDAO = new StoryDAO();
@@ -247,5 +286,12 @@ public class RecommendationManager {
 		}
 		
 		
+	}
+	
+	
+	
+	private enum QueryTermType {
+		FIELD,
+		BASIC
 	}
 }

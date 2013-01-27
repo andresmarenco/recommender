@@ -18,8 +18,7 @@ import recommender.dataaccess.ConnectionManager;
 import recommender.dataaccess.EventDAO;
 import recommender.dataaccess.TerrierManager;
 import recommender.dataaccess.UserDAO;
-import recommender.model.BaselineUserModel;
-import recommender.model.ContentUserModel;
+import recommender.model.CachedContentUserModel;
 import recommender.model.UserModel;
 import recommender.querying.RecommendationManager;
 import recommender.querying.RecommendationManager.RecommendationMetadata;
@@ -27,13 +26,12 @@ import recommender.web.controller.StoryScoreController;
 
 public class Evaluation {
 
-	private static final String OUTPUT_FILE_NAME = "/home/andres/baseline_evaluation.txt";
-	private static final String HISTOGRAM5_FILE_NAME = "/home/andres/baseline_histogram5.txt";
-	private static final String HISTOGRAM10_FILE_NAME = "/home/andres/baseline_histogram10.txt";
-	private static final String HISTOGRAM20_FILE_NAME = "/home/andres/baseline_histogram20.txt";
+	private static final String OUTPUT_FILE_NAME = "/home/andres/models_evaluation.txt";
+	private static final String HISTOGRAM5_FILE_NAME = "/home/andres/models_histogram5.txt";
+	private static final String HISTOGRAM10_FILE_NAME = "/home/andres/models_histogram10.txt";
+	private static final String HISTOGRAM20_FILE_NAME = "/home/andres/models_histogram20.txt";
 	private static final int RECOMMENDATIONS_TOTAL = 25;
 	private static final int EVALUATION_ITERATIONS = 100;
-	private static final float TEST_SET_SIZE = 0.8F;
 	
 	/**
 	 * The number of pieces used in the validation.
@@ -144,12 +142,15 @@ public class Evaluation {
 			
 			// Separates the log into a test set and a training set and counts their size and
 			// how many likes they contain
-			int limit = Math.round(viewedTotal * TEST_SET_SIZE);
-			
-//			List<IRStoryUserStatistics> trainingSet = viewedStories.subList(limit, viewedTotal);
-//			List<IRStoryUserStatistics> testSet = viewedStories.subList(0, limit);
 			List<IRStoryUserStatistics> trainingSet;
 			List<IRStoryUserStatistics> testSet;
+			
+
+			
+			// Sets the current user for the histogram
+			this.histograms.setCurrentUser(user);
+			
+			
 			
 			for (int i = 0; i < CROSS_VALIDATION_PIECES; i++) {
 				trainingSet = new ArrayList<IRStoryUserStatistics>();
@@ -159,6 +160,10 @@ public class Evaluation {
 				trainingSet.removeAll(testSet);
 				evaluateUser(user, trainingSet, testSet, viewedSetMap, viewedTotal);
 			}
+			
+			
+			// Flushes the histogram into the files
+			this.histograms.flushAll();
 			
 			
 		}
@@ -185,6 +190,7 @@ public class Evaluation {
 		System.out.println("TRAINING LIKES " + trainingLikes);
 		
 		int testTotal = testSet.size();
+		int trainingTotal = trainingSet.size();
 		for(IRStoryUserStatistics stats : testSet) {
 			testSetMap.put(stats.getStory(), stats);
 			if(stats.getScore() > StoryScoreController.NEUTRAL_SCORE) testLikes++;
@@ -202,11 +208,8 @@ public class Evaluation {
 			user = new IRUser();
 			user.setId(-1L);
 		}
-		UserModel userModel = new BaselineUserModel(user, trainingSet);
+		UserModel userModel = new CachedContentUserModel(user, trainingSet);
 		
-		
-		// Sets the current user for the histogram
-		this.histograms.setCurrentUser(user);
 					
 					
 		for (int i = 0; i < EVALUATION_ITERATIONS; i++) {
@@ -225,11 +228,17 @@ public class Evaluation {
 			double recallAt20 = 0;
 			for(IRStory story : recommendations.getResult()) {
 				
+				IRStoryUserStatistics testStats = testSetMap.get(story);
+				if(testStats != null) {
+					if (testStats.getScore() > 0) {
+						foundStories++;
+					}
+				}
 				
 				
 				
-				IRStoryUserStatistics viewStats = viewedSetMap.get(story);
-				if(viewStats != null) {
+//				IRStoryUserStatistics viewStats = viewedSetMap.get(story);
+//				if(viewStats != null) {
 //					this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}",
 //							user.getId(),
 //							story.getCode(),
@@ -244,33 +253,36 @@ public class Evaluation {
 //							(testLikes+trainingLikes)
 //							));
 //					this.writer.newLine();
-					if (viewStats.getScore() > 0) {
-						foundStories++;
-					}
-					
-				}
+//					if (viewStats.getScore() > 0) {
+//						foundStories++;
+//					}
+//					
+//				}
 				
 				retrievedStories++;
 				
 
 				if(retrievedStories == 5) {
 					precesionAt5 = foundStories / retrievedStories;
-					recallAt5 = foundStories / (testLikes + trainingLikes);
+//					recallAt5 = foundStories / (testLikes + trainingLikes);
+					recallAt5 = foundStories / Math.max(testLikes, 1);
 				}
 				if(retrievedStories == 10) {
 					precesionAt10 = foundStories / retrievedStories;
-					recallAt10 = foundStories / (testLikes + trainingLikes);
+//					recallAt10 = foundStories / (testLikes + trainingLikes);
+					recallAt10 = foundStories / Math.max(testLikes, 1);
 				}
 				if(retrievedStories == 20) {
 					precesionAt20 = foundStories / retrievedStories;
-					recallAt20 = foundStories / (testLikes + trainingLikes);
+//					recallAt20 = foundStories / (testLikes + trainingLikes);
+					recallAt20 = foundStories / Math.max(testLikes, 1);
 				}
 				
 				this.histograms.putInAll(story);
 			}
 			
 
-			this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7}",
+			this.writer.write(MessageFormat.format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11}",
 					user.getId(),
 					queryId,
 					precesionAt5,
@@ -278,13 +290,14 @@ public class Evaluation {
 					precesionAt20,
 					recallAt5,
 					recallAt10,
-					recallAt20
+					recallAt20,
+					testTotal,
+					trainingTotal,
+					testLikes,
+					trainingLikes
 					));
 			this.writer.newLine();
 		}
-		
-		
-		this.histograms.flushAll();
 		
 	}
 
@@ -298,7 +311,7 @@ public class Evaluation {
 		try
 		{
 //			this.writer.write("User ID; Story Code; Score; Rank; Present in Test Set; Query ID; Query; # Stories in Test Set; # Stories in Total; # Likes in Test Set; # Likes in Total");
-			this.writer.write("User ID; Query ID; P@5; P@10; P@20; R@5; R@10; R@20 ");
+			this.writer.write("User ID; Query ID; P@5; P@10; P@20; R@5; R@10; R@20; Test Size; Training Size; Test Likes; Training Likes ");
 			this.writer.newLine();
 			
 			// Evaluates all the users (except root)
@@ -311,7 +324,7 @@ public class Evaluation {
 			
 			// User with all the data
 			this.evaluateUser(null);
-			
+		
 			this.closeAllWriters();
 		}
 		catch(Exception ex) {
@@ -444,6 +457,14 @@ public class Evaluation {
 		}
 		
 		
+		@Override
+		public void clear() {
+			super.clear();
+			this.currentUser = null;
+			this.resetCounter();
+		}
+		
+		
 		/**
 		 * Resets the counter of the recommendations in the iteration
 		 */
@@ -467,6 +488,11 @@ public class Evaluation {
 		public void flush() {
 			try
 			{
+				if(this.currentUser == null) {
+					this.currentUser = new IRUser();
+					this.currentUser.setId(-1L);
+				}
+				
 				for(Map.Entry<IRStory, Integer> values : this.entrySet()) {
 					this.histogramWriter.write(MessageFormat.format("{0};{1};{2}",
 							this.currentUser.getId(),
@@ -477,7 +503,6 @@ public class Evaluation {
 				}
 				
 				this.clear();
-				this.resetCounter();
 			}
 			catch(Exception ex) {
 				ex.printStackTrace();

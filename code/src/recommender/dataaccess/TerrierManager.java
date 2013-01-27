@@ -51,15 +51,13 @@ public class TerrierManager {
 		}
 	}
 	
-//	/**
-//	 * Default Constructor
-//	 */
-//	TerrierManager() {
-//		this.setTerrierHome();
-//		index = Index.createIndex();
-//		manager = new Manager(index);
-//	}
+
 	
+	/**
+	 * Returns an instance of the class
+	 * @param key Type of the Index
+	 * @return Singleton instance of the class
+	 */
 	public static TerrierManager getInstance(ManagerType key) throws RecommenderException{
 		TerrierManager manager = classInstances.get(key);
 		if (manager == null) {
@@ -86,6 +84,9 @@ public class TerrierManager {
 		return manager;
 	}
 	
+	
+	
+	
 	/**
 	 * Specialized constructor to use a different index, not the default in terrier home.
 	 * @param indexPath path on the disk
@@ -94,32 +95,11 @@ public class TerrierManager {
 	private TerrierManager(String indexPath, String indexPrefix) {
 		if(indexPrefix == null || indexPrefix.isEmpty())
 			 indexPrefix = "data";
-		//index = Index.createIndex();
 		index = Index.createIndex(indexPath, indexPrefix);
 		manager = new Manager(index);
 	}
 	
 	
-	
-//	/**
-//     * Returns an instance of the class
-//     * @return Singleton instance of the class
-//     */
-//	public synchronized static TerrierManager getInstance() {
-//		try
-//		{
-//		    if(_ClassInstance == null)
-//		    {
-//			    _ClassInstance = new TerrierManager();    
-//		    }
-//		    return _ClassInstance;
-//		}
-//		catch(Exception ex)
-//		{
-//            ex.printStackTrace();
-//		    return null;
-//		}
-//	}
 	
 	
 	/**
@@ -129,6 +109,8 @@ public class TerrierManager {
 	public Index getIndex() {
 		return this.index;
 	}
+	
+	
 	
 	
 	/**
@@ -148,6 +130,13 @@ public class TerrierManager {
 		return this.manager;
 	}
 	
+	
+	
+	/**
+	 * Types of the Index
+	 * @author andres
+	 *
+	 */
 	public enum ManagerType{
 		SEARCH, RECOMMENDER
 	}
