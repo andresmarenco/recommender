@@ -1,8 +1,6 @@
 package recommender.model;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import recommender.beans.IRStory;
@@ -14,14 +12,12 @@ import recommender.dataaccess.StoryDAO.StoriesOrder;
 import recommender.model.bag.BagKey;
 import recommender.model.bag.BagValue;
 import recommender.model.bag.FeatureBag;
-import recommender.utils.LRUCacheMap;
 import recommender.web.controller.StoryScoreController;
 
 public class CachedFeedbackUserModel extends UserModel {
 
 	private static final float USER_LOST_INTEREST_FACTOR = 0.1F;
 	
-	private Map<IRStory, IRStoryUserStatistics> story_session;
 	private FeatureBag bag;
 	
 	/**
@@ -51,14 +47,12 @@ public class CachedFeedbackUserModel extends UserModel {
 	 * If the current user is set, tries to fill it with his log
 	 */
 	private void initializeStorySession() {
-		this.story_session = new LRUCacheMap<IRStory, IRStoryUserStatistics>(SESSION_SIZE);
-		this.story_session = Collections.synchronizedMap(this.story_session);
 		StoryDAO storyDAO = new StoryDAO();
 
 		if(this.currentUser != null) {
 			for(IRStoryUserStatistics stats : this.listUserStoryViews()) {
 				stats.setStory(storyDAO.loadAllFields(stats.getStory()));
-				this.story_session.put(stats.getStory(), stats);
+				this.storySession.put(stats.getStory(), stats);
 				this.extractFeatures(stats);
 			} 
 		} else {
@@ -68,14 +62,14 @@ public class CachedFeedbackUserModel extends UserModel {
 			for(IRStory story : storyDAO.listStories(SESSION_SIZE/2, 0, StoriesOrder.MOST_VIEWED)) {
 				story = storyDAO.loadAllFields(story);
 				stats = new IRStoryUserStatistics(story, story.getViews());
-				this.story_session.put(story, stats);
+				this.storySession.put(story, stats);
 				this.extractFeatures(stats);
 			}
 			
 			for(IRStory story : storyDAO.listStories(SESSION_SIZE/2, 0, StoriesOrder.BEST_RANKED)) {
 				story = storyDAO.loadAllFields(story);
 				stats = new IRStoryUserStatistics(story, story.getViews());
-				this.story_session.put(story, stats);
+				this.storySession.put(story, stats);
 				this.extractFeatures(stats);
 			}			
 		}
@@ -103,11 +97,11 @@ public class CachedFeedbackUserModel extends UserModel {
 	 */
 	@Override
 	public void viewedStory(IRStory story, IRStoryUserStatistics stats) {
-		IRStoryUserStatistics session_stats = this.story_session.get(story);
+		IRStoryUserStatistics session_stats = this.storySession.get(story);
 
 		if(session_stats == null) {
 			stats.setViews(1L);
-			this.story_session.put(story, stats);
+			this.storySession.put(story, stats);
 
 			this.extractFeatures(stats);
 		} else {
@@ -125,7 +119,7 @@ public class CachedFeedbackUserModel extends UserModel {
 	 */
 	@Override
 	public void scoredStory(IRStory story, float score) {
-		IRStoryUserStatistics session_stats = this.story_session.get(story);
+		IRStoryUserStatistics session_stats = this.storySession.get(story);
 		if(session_stats != null) {
 
 			if(session_stats.getScore() == StoryScoreController.NEUTRAL_SCORE) {

@@ -2,7 +2,7 @@ package recommender.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +30,7 @@ public abstract class UserModel {
 	public UserModel() {
 		this.currentUser = null;
 		this.storySession = new LRUCacheMap<>(SESSION_SIZE);
+		this.storySession = Collections.synchronizedMap(this.storySession);
 	}
 	
 	
@@ -38,8 +39,9 @@ public abstract class UserModel {
 	 * @param current_user
 	 */
 	public UserModel(IRUser user) {
-		this.storySession = new LRUCacheMap<>(SESSION_SIZE);
 		this.currentUser = user;
+		this.storySession = new LRUCacheMap<>(SESSION_SIZE);
+		this.storySession = Collections.synchronizedMap(this.storySession);
 	}
 	
 	
@@ -139,9 +141,10 @@ public abstract class UserModel {
 	 */
 	public IRStory getLastViewedStory() {
 		IRStory result = null;
-		Iterator<IRStoryUserStatistics> iterator = this.storySession.values().iterator();
-		if(iterator.hasNext()) {
-			result = iterator.next().getStory();
+		LinkedList<IRStoryUserStatistics> stories = new LinkedList<>(this.storySession.values());
+		
+		if(!stories.isEmpty()) {
+			result = stories.getLast().getStory();
 		}
 		
 		return result;

@@ -241,7 +241,7 @@ public class EventDAO {
 	
 	
 	/**
-	 * Lists the stories views and scores of the user ordered descending by the last story viewed
+	 * Lists the stories views and scores of the user ordered ascending by the last story viewed
 	 * @param user Selected User
 	 * @return List with user-s views statistics
 	 */
@@ -308,7 +308,7 @@ public class EventDAO {
 	
 	
 	/**
-	 * Lists the stories views and scores of the user ordered descending by the last story viewed
+	 * Lists the stories views and scores of the user ordered ascending by the last story viewed
 	 * @param user Selected User
 	 * @param limit Limit of the list (or null for all)
 	 * @return List with user's views statistics
@@ -323,7 +323,7 @@ public class EventDAO {
 		{
 			result = new ArrayList<IRStoryUserStatistics>();
 			connection = _ConnectionManager.getConnection();
-			StringBuilder query = new StringBuilder("select count(el.id) as Views, sl.StoryId, coalesce((select us.score from ir_story_user_score as us where us.userId = el.userId and us.storyId = sl.storyId limit 1), 0) as Score, max(el.TriggeredDate) as LastViewed from ir_event_log as el inner join ir_story_view_log as sl on el.id = sl.id where el.userId = ? group by StoryId order by LastViewed desc");
+			StringBuilder query = new StringBuilder("select count(el.id) as Views, sl.StoryId, coalesce((select us.score from ir_story_user_score as us where us.userId = el.userId and us.storyId = sl.storyId limit 1), 0) as Score, max(el.TriggeredDate) as LastViewed from ir_event_log as el inner join ir_story_view_log as sl on el.id = sl.id where el.userId = ? group by StoryId order by LastViewed asc");
 			
 			if(limit != null) {
 				stmt = connection.prepareStatement(query.append(" limit ? ").toString());

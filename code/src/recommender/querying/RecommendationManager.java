@@ -38,7 +38,6 @@ public class RecommendationManager {
 	private RetrievalManager retrievalManager;
 	
 	private static final String[] FIELD_MODELS = { "PL2F", "BM25F" };
-	private final QueryTermType queryTermType;
 	
 	
 	/**
@@ -46,12 +45,6 @@ public class RecommendationManager {
 	 */
 	public RecommendationManager() {
 		super();
-		String currentModel = ApplicationSetup.getProperty("trec.model", "PL2");
-		if(Arrays.asList(FIELD_MODELS).contains(currentModel)) {
-			this.queryTermType = QueryTermType.FIELD;
-		} else {
-			this.queryTermType = QueryTermType.BASIC;
-		}
 
 		try
 		{
@@ -90,6 +83,16 @@ public class RecommendationManager {
 		if(userModel == null) userModel = UserModel.newInstance();
 		
 		if(userModel != null) {
+			// Find the current current model
+			String currentModel = ApplicationSetup.getProperty("trec.model", "PL2");
+			QueryTermType queryTermType;
+			if(Arrays.asList(FIELD_MODELS).contains(currentModel)) {
+				queryTermType = QueryTermType.FIELD;
+			} else {
+				queryTermType = QueryTermType.BASIC;
+			}
+			
+			
 			List<BagValue> features = userModel.getModelFeatures();
 			
 			// If there are no features, use the features from the most viewed and best ranked stories
@@ -108,7 +111,7 @@ public class RecommendationManager {
 				double weight = feature.getTotal_weight();
 				
 				if(weight > 0.0D) {
-					Query q = this.createQueryTerm(feature);
+					Query q = this.createQueryTerm(queryTermType, feature);
 					if(q != null) {
 						mtq.add(q);
 						
@@ -160,10 +163,11 @@ public class RecommendationManager {
 	
 	/**
 	 * Creates a query term with the feature
+	 * @param queryTermType Query Term Type according to the Terrier Property
 	 * @param feature Bag Feature
 	 * @return Query Term
 	 */
-	private Query createQueryTerm(BagValue feature) {
+	private Query createQueryTerm(QueryTermType queryTermType, BagValue feature) {
 		Query result = null;
 		SingleTermQuery stq = this.createSingleTermQuery(feature);
 		

@@ -6,5 +6,5 @@
     <Environment name="terrierSearchIndexPath" value="/usr/local/terrier/var/index" type="java.lang.String" override="false" />
     <Environment name="terrierRecommenderIndexPath" value="/usr/local/terrier/var/index_recommender" type="java.lang.String" override="false" />
     <Environment name="loggedUserModel" value="ContentUserModel" type="java.lang.String" override="false" />
-    <Environment name="unloggedUserModel" value="CachedFeedbackUserModel" type="java.lang.String" override="false" />
+    <Environment name="unloggedUserModel" value="CachedContentUserModel" type="java.lang.String" override="false" />
 </Context>
